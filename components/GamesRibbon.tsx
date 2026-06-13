@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTodaysGames } from "@/lib/api";
+import { LocalTime } from "./LocalTime";
 
 export async function GamesRibbon() {
   const games = await getTodaysGames();
@@ -30,7 +31,9 @@ export async function GamesRibbon() {
               </div>
             </div>
             <div className="ribbon-time">
-              {g.status === "live" ? g.period : g.startTimeLocal}
+              {g.status === "live"
+                ? g.period
+                : <LocalTime utc={g.startTimeUTC} fallback={g.startTimeLocal} />}
             </div>
           </Link>
         ))}

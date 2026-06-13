@@ -8,6 +8,7 @@ import { TeamBadge } from "@/components/TeamBadge";
 import Link from "next/link";
 import { GameCard } from "@/components/GameCard";
 import { AdSlot } from "@/components/AdSlot";
+import { LocalTime } from "@/components/LocalTime";
 import {
   getAllGameParams,
   getGameBySlug,
@@ -107,7 +108,7 @@ export default async function GamePage({ params }: Props) {
               <div className="info-strip">
                 <div className="info-box">
                   <div className="info-label">Start</div>
-                  <div className="info-value">{game.startTimeLocal}</div>
+                  <div className="info-value"><LocalTime utc={game.startTimeUTC} fallback={game.startTimeLocal} /></div>
                   <div className="info-sub">{game.dateLabel}</div>
                 </div>
                 <div className="info-box">
@@ -172,7 +173,7 @@ export default async function GamePage({ params }: Props) {
                   : "at"}{" "}
                 {game.home.shortName}
               </strong>{" "}
-              — {game.contextLabel ?? game.league}, {game.startTimeLocal} on{" "}
+              — {game.contextLabel ?? game.league}, <LocalTime utc={game.startTimeUTC} fallback={game.startTimeLocal} /> on{" "}
               {game.broadcast}. Our model makes{" "}
               <strong>
                 {favorite.shortName} the favorite at {favProb.toFixed(1)}%

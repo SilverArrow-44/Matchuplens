@@ -219,6 +219,7 @@ function mapEvent(sport: SportId, event: any): GameDetail | null {
     away,
     status,
     startTimeLocal: time,
+    startTimeUTC: event.date ?? new Date().toISOString(),
     dateLabel: date,
     venue: comp.venue?.fullName ?? "TBD",
     city: [comp.venue?.address?.city, comp.venue?.address?.state]

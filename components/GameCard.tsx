@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { GameSummary } from "@/lib/types";
 import { TeamBadge } from "./TeamBadge";
+import { LocalTime } from "./LocalTime";
 
 export function GameCard({ game }: { game: GameSummary }) {
   return (
@@ -16,7 +17,7 @@ export function GameCard({ game }: { game: GameSummary }) {
           </span>
           {game.contextLabel ?? game.league}
         </span>
-        <span>{game.startTimeLocal}</span>
+        <LocalTime utc={game.startTimeUTC} fallback={game.startTimeLocal} />
       </div>
       <div className="game-card-teams">
         <div className="game-card-team">

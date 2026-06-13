@@ -35,7 +35,8 @@ export interface GameSummary {
   home: Team;
   away: Team;
   status: "scheduled" | "live" | "final";
-  startTimeLocal: string; // "9:00 PM ET"
+  startTimeLocal: string; // "9:00 PM ET" — ET fallback for SSR
+  startTimeUTC: string;   // ISO-8601 UTC — used by LocalTime for browser tz
   dateLabel: string; // "Jun 11, 2026"
   venue: string;
   city: string;

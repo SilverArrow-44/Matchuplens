@@ -5,6 +5,7 @@ import { GameCard } from "@/components/GameCard";
 import { TeamBadge } from "@/components/TeamBadge";
 import { getFeaturedGame, getTodaysGames } from "@/lib/api";
 import { AdSlot } from "@/components/AdSlot";
+import { LocalTime } from "@/components/LocalTime";
 
 // Refresh live scores/odds every 60 seconds
 export const revalidate = 60;
@@ -38,7 +39,7 @@ export default async function HomePage() {
               ★ Featured · {featured.contextLabel}
             </span>
             <span>
-              {featured.startTimeLocal} · {featured.broadcast}
+              <LocalTime utc={featured.startTimeUTC} fallback={featured.startTimeLocal} /> · {featured.broadcast}
             </span>
           </div>
           <div className="hero-matchup">
