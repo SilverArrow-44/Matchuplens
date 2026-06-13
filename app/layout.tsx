@@ -10,6 +10,21 @@ export const metadata: Metadata = {
   },
   description:
     "Every game, every matchup: team stats, head-to-head history, injury reports, and win probability predictions for the FIFA World Cup 2026, NBA, NFL, MLB, NHL, UFC, and soccer.",
+  openGraph: {
+    title: "MatchupLens — Team vs Team Stats, History & Predictions",
+    description:
+      "Every game, every matchup: team stats, head-to-head history, injury reports, and win probability predictions for NBA, NFL, MLB, NHL, UFC, and World Cup 2026.",
+    url: "https://matchuplens.com",
+    siteName: "MatchupLens",
+    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MatchupLens — Team vs Team Stats & Predictions",
+    description: "Stats, H2H history, injuries, and win probability for every game.",
+    images: ["/og-image.png"],
+  },
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-icon.png",
@@ -20,7 +35,7 @@ export const metadata: Metadata = {
 // Light is the default; a saved visitor choice always wins.
 const themeInit = `
 try {
-  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
 } catch (e) { document.documentElement.dataset.theme = "light"; }
 `;
 

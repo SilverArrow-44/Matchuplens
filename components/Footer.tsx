@@ -13,7 +13,9 @@ export function Footer() {
           If you or someone you know has a gambling problem, call 1-800-GAMBLER.
           21+ only. Odds and availability vary by state.
         </div>
-        <div>Sample data shown — live data integration pending.</div>
+        <div>
+          Data sourced from ESPN. &copy; {new Date().getFullYear()} MatchupLens.
+        </div>
       </div>
     </footer>
   );
