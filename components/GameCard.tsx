@@ -3,6 +3,38 @@ import type { GameSummary } from "@/lib/types";
 import { TeamBadge } from "./TeamBadge";
 import { LocalTime } from "./LocalTime";
 
+function StatusBadge({ game }: { game: GameSummary }) {
+  if (game.status === "live") {
+    return (
+      <span style={{ color: "var(--red)", fontWeight: 700, fontSize: 12, whiteSpace: "nowrap" }}>
+        ● {game.period ?? "LIVE"}
+      </span>
+    );
+  }
+  if (game.status === "final") {
+    return (
+      <span style={{ color: "var(--text3)", fontWeight: 700, fontSize: 12 }}>
+        FINAL
+      </span>
+    );
+  }
+  if (game.status === "postponed") {
+    return (
+      <span style={{ color: "var(--amber, #f59e0b)", fontWeight: 700, fontSize: 12 }}>
+        POSTPONED
+      </span>
+    );
+  }
+  if (game.status === "cancelled") {
+    return (
+      <span style={{ color: "var(--red)", fontWeight: 700, fontSize: 12 }}>
+        CANCELLED
+      </span>
+    );
+  }
+  return <LocalTime utc={game.startTimeUTC} fallback={game.startTimeLocal} />;
+}
+
 export function GameCard({ game }: { game: GameSummary }) {
   return (
     <Link href={`/${game.sport}/${game.slug}`} className="game-card">
@@ -17,7 +49,7 @@ export function GameCard({ game }: { game: GameSummary }) {
           </span>
           {game.contextLabel ?? game.league}
         </span>
-        <LocalTime utc={game.startTimeUTC} fallback={game.startTimeLocal} />
+        <StatusBadge game={game} />
       </div>
       <div className="game-card-teams">
         <div className="game-card-team">

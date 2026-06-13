@@ -36,7 +36,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!game) return {};
   const title = `${game.away.shortName} vs ${game.home.shortName} Prediction, Stats & H2H — ${game.dateLabel}`;
   const description = `${game.away.name} vs ${game.home.name} (${game.contextLabel ?? game.league}): win probability ${game.winProbHome.toFixed(1)}% ${game.home.abbr}, team stats, last 10 head-to-head, injury report, and our pick.`;
-  return { title, description };
+  return {
+    title,
+    description,
+    alternates: { canonical: `https://matchuplens.com/${sport}/${slug}` },
+  };
 }
 
 export default async function GamePage({ params }: Props) {
@@ -101,6 +105,10 @@ export default async function GamePage({ params }: Props) {
                 <div className="hero-vs">
                   {game.status === "scheduled" ? (
                     "VS"
+                  ) : game.status === "postponed" ? (
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "var(--amber, #f59e0b)" }}>POSTPONED</span>
+                  ) : game.status === "cancelled" ? (
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "var(--red)" }}>CANCELLED</span>
                   ) : (
                     <span className="hero-score">
                       {game.awayScore} – {game.homeScore}

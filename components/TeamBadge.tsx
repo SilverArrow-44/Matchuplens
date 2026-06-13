@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Image from "next/image";
 import type { Team } from "@/lib/types";
 
 // Badge colors are derived from --team in globals.css with color-mix,
@@ -16,10 +17,9 @@ export function TeamBadge({ team, size = 64 }: { team: Team; size?: number }) {
       }
     >
       {team.logo ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={team.logo}
-          alt={team.name}
+          alt={`${team.name} logo`}
           width={Math.round(size * 0.72)}
           height={Math.round(size * 0.72)}
           style={{ objectFit: "contain" }}

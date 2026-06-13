@@ -1,6 +1,6 @@
 import type { GameDetail, GameSummary, Sport, SportId } from "./types";
 import { GAMES, SPORTS, FEATURED_GAME_ID } from "./sampleData";
-import { fetchLiveGames, parseEventId } from "./espn";
+import { fetchLiveGames, fetchSeasonStatus, parseEventId } from "./espn";
 
 // ----------------------------------------------------------------------------
 // Data access layer — LIVE (ESPN) with sample-data fallback.
@@ -32,7 +32,15 @@ async function liveGamesFor(sport: SportId): Promise<GameDetail[] | null> {
 }
 
 export async function getSports(): Promise<Sport[]> {
-  return SPORTS;
+  if (SAMPLE_MODE) return SPORTS;
+  // Derive inSeason from live ESPN season type (4 = offseason) in parallel
+  const results = await Promise.allSettled(
+    SPORTS.map((s) => fetchSeasonStatus(s.id))
+  );
+  return SPORTS.map((s, i) => {
+    const r = results[i];
+    return r.status === "fulfilled" ? { ...s, inSeason: r.value } : s;
+  });
 }
 
 export async function getTodaysGames(sport?: SportId): Promise<GameSummary[]> {

@@ -31,6 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${s.label} ${noun} Today — Predictions, Stats & Matchups`,
     description: `Today's ${s.label} ${noun.toLowerCase()} with stats, head-to-head history, injury reports, and win probability predictions.`,
+    alternates: { canonical: `https://matchuplens.com/${sport}` },
   };
 }
 

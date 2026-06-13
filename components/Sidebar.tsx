@@ -20,6 +20,9 @@ export function Sidebar({ game }: { game: GameDetail }) {
 
       <div className="panel">
         <div className="panel-title">Betting trends</div>
+        <p style={{ fontSize: 11, color: "var(--text3)", marginBottom: 8 }}>
+          For informational context only — not betting advice.
+        </p>
         {game.ats.map((row) => (
           <div className="side-row" key={row.label}>
             <span className="side-label">{row.label}</span>

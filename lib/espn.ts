@@ -41,6 +41,14 @@ const LOWER_IS_BETTER = /turnover|error|against|absorbed|allowed|fouls/i;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+/**
+ * Strip all HTML tags except <strong> and <em> from ESPN headline strings.
+ * Prevents potential XSS from unexpected HTML in the ESPN API response.
+ */
+function sanitizeHtml(raw: string): string {
+  return raw.replace(/<(?!\/?(?:strong|em)\b)[^>]*>/gi, "").trim();
+}
+
 async function espnFetch(path: string): Promise<any> {
   const res = await fetch(`${BASE}/${path}`, {
     next: { revalidate: 60 },
@@ -178,8 +186,21 @@ function mapEvent(sport: SportId, event: any): GameDetail | null {
   const away = mapTeam(awayComp);
 
   const state = event.status?.type?.state; // pre | in | post
-  const status =
-    state === "in" ? "live" : state === "post" ? "final" : "scheduled";
+  const statusName: string = event.status?.type?.name ?? "";
+  const isPostponed =
+    statusName.includes("POSTPONED") || statusName.includes("SUSPENDED");
+  const isCancelled =
+    statusName.includes("CANCELED") || statusName.includes("CANCELLED") || statusName.includes("FORFEIT");
+  const status: GameDetail["status"] =
+    state === "in"
+      ? "live"
+      : isPostponed
+        ? "postponed"
+        : isCancelled
+          ? "cancelled"
+          : state === "post"
+            ? "final"
+            : "scheduled";
   const { time, date } = fmtTime(event.date);
 
   const odds = comp.odds?.[0];
@@ -199,15 +220,15 @@ function mapEvent(sport: SportId, event: any): GameDetail | null {
 
   const storylines: GameDetail["overview"]["storylines"] = [];
   if (headline?.shortLinkText)
-    storylines.push({ team: "neutral", text: `<strong>ESPN:</strong> ${headline.shortLinkText}` });
+    storylines.push({ team: "neutral", text: `<strong>ESPN:</strong> ${sanitizeHtml(headline.shortLinkText)}` });
   if (headline?.description && headline.description !== headline.shortLinkText)
-    storylines.push({ team: "neutral", text: headline.description });
+    storylines.push({ team: "neutral", text: sanitizeHtml(headline.description) });
   if (seriesSummary)
-    storylines.push({ team: "neutral", text: `<strong>Series:</strong> ${seriesSummary}` });
+    storylines.push({ team: "neutral", text: `<strong>Series:</strong> ${sanitizeHtml(seriesSummary)}` });
   if (odds?.details)
     storylines.push({
       team: "neutral",
-      text: `<strong>Betting line:</strong> ${odds.details}${odds.overUnder ? ` · O/U ${odds.overUnder}` : ""}`,
+      text: `<strong>Betting line:</strong> ${sanitizeHtml(odds.details)}${odds.overUnder ? ` · O/U ${odds.overUnder}` : ""}`,
     });
 
   return {
@@ -249,7 +270,7 @@ function mapEvent(sport: SportId, event: any): GameDetail | null {
     h2h: { homeWins: 0, awayWins: 0, windowLabel: "", games: [], trend: "" },
     injuries: {
       rows: [],
-      source: "Injury feed not yet connected",
+      source: "ESPN · No injury report available for this game",
       updated: date,
     },
     players: mapPlayers(homeComp, awayComp),
@@ -267,6 +288,20 @@ function mapEvent(sport: SportId, event: any): GameDetail | null {
         ]
       : [{ label: "Odds", value: "TBD" }],
   };
+}
+
+/**
+ * Returns true if the sport is currently in-season (regular or post).
+ * ESPN season.type: 1=pre, 2=regular, 3=post, 4=offseason.
+ */
+export async function fetchSeasonStatus(sport: SportId): Promise<boolean> {
+  try {
+    const data = await espnFetch(`${LEAGUE_PATH[sport]}/scoreboard`);
+    const seasonType: number = data.season?.type ?? 2;
+    return seasonType !== 4;
+  } catch {
+    return true; // default to in-season on fetch failure
+  }
 }
 
 export async function fetchLiveGames(sport: SportId): Promise<GameDetail[]> {

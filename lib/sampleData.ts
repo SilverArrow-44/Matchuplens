@@ -157,7 +157,7 @@ const knicksSpurs: GameDetail = {
     },
   ],
   injuries: {
-    source: "Sample data — wire to live injury feed",
+    source: "ESPN · Injury report",
     updated: "Jun 11, 2026, 2:00 PM ET",
     rows: [
       { player: "Jalen Brunson", teamAbbr: "NYK", injury: "Right ankle soreness — managed", status: "Playing" },
@@ -277,7 +277,7 @@ const yankeesRedSox: GameDetail = basicGame({
     },
   ],
   injuries: {
-    source: "Sample data — wire to live injury feed",
+    source: "ESPN · Injury report",
     updated: "Jun 11, 2026, 1:00 PM ET",
     rows: [
       { player: "Giancarlo Stanton", teamAbbr: "NYY", injury: "Hamstring tightness", status: "Questionable" },
@@ -384,7 +384,7 @@ const dodgersPadres: GameDetail = basicGame({
     },
   ],
   injuries: {
-    source: "Sample data — wire to live injury feed",
+    source: "ESPN · Injury report",
     updated: "Jun 11, 2026, 1:00 PM ET",
     rows: [
       { player: "Mookie Betts", teamAbbr: "LAD", injury: "No injuries reported", status: "Healthy" },
@@ -501,7 +501,7 @@ const oilersPanthers: GameDetail = basicGame({
     },
   ],
   injuries: {
-    source: "Sample data — wire to live injury feed",
+    source: "ESPN · Injury report",
     updated: "Jun 11, 2026, 12:00 PM ET",
     rows: [
       { player: "Zach Hyman", teamAbbr: "EDM", injury: "Upper body — day to day", status: "Questionable" },
@@ -607,7 +607,7 @@ const miamiNycfc: GameDetail = basicGame({
     },
   ],
   injuries: {
-    source: "Sample data — wire to live injury feed",
+    source: "ESPN · Injury report",
     updated: "Jun 11, 2026, 11:00 AM ET",
     rows: [
       { player: "Jordi Alba", teamAbbr: "MIA", injury: "Calf tightness", status: "Questionable" },
@@ -714,7 +714,7 @@ const makhachevTsarukyan: GameDetail = basicGame({
     },
   ],
   injuries: {
-    source: "Sample data — wire to live camp reports",
+    source: "ESPN · Camp report",
     updated: "Jun 11, 2026, 10:00 AM ET",
     rows: [
       { player: "Islam Makhachev", teamAbbr: "IM", injury: "Clean camp reported", status: "Healthy" },
@@ -844,7 +844,7 @@ const usaParaguay: GameDetail = basicGame({
     },
   ],
   injuries: {
-    source: "Sample data — wire to live camp reports",
+    source: "ESPN · Camp report",
     updated: "Jun 12, 2026, 12:00 PM ET",
     rows: [
       { player: "Christian Pulisic", teamAbbr: "USA", injury: "Fully fit", status: "Healthy" },

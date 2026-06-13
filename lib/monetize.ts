@@ -18,8 +18,8 @@ const env = (key: string) => process.env[key] || "#";
 // Primary sportsbook CTA — used below predictions and in the sidebar.
 export const PRIMARY_BOOK: AffiliateLink = {
   id: "draftkings",
-  label: "Claim your sportsbook signup bonus",
-  sub: "21+ · New users · Bet responsibly · 1-800-GAMBLER",
+  label: "Get started at DraftKings",
+  sub: "21+ only · New users · Bet responsibly · Terms apply · 1-800-GAMBLER",
   url: env("NEXT_PUBLIC_AFF_DRAFTKINGS"),
 };
 

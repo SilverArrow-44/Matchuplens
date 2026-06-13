@@ -60,9 +60,10 @@ export function AffiliateCTA({ style }: { style?: React.CSSProperties }) {
         setBettingAllowed(!RESTRICTED_BETTING_STATES.has(state));
       })
       .catch(() => {
-        // On any error (ad blocker, network) default to showing the CTA —
-        // DraftKings will reject ineligible users on their end.
-        setBettingAllowed(true);
+        // On geo-detection error (ad blocker, VPN, network failure), show
+        // ONLY the fantasy CTA — never the sportsbook CTA — to avoid
+        // inadvertently serving it to users in restricted states.
+        setBettingAllowed(false);
       });
   }, []);
 
@@ -96,17 +97,22 @@ export function AffiliateCTA({ style }: { style?: React.CSSProperties }) {
         </a>
       </div>
 
-      {/* Sportsbook CTA — hidden in restricted states */}
+      {/* Sportsbook CTA — hidden in restricted states, never shown on geo error */}
       {bettingAllowed === true && (
-        <a
-          className="affiliate-cta"
-          href={PRIMARY_BOOK.url}
-          rel="nofollow sponsored"
-          target="_blank"
-        >
-          {PRIMARY_BOOK.label}
-          <span className="affiliate-sub">{PRIMARY_BOOK.sub}</span>
-        </a>
+        <>
+          <div style={{ fontSize: 10, fontWeight: 700, color: "var(--red)", marginBottom: 4, letterSpacing: 0.5 }}>
+            21+ ONLY · SPORTS BETTING
+          </div>
+          <a
+            className="affiliate-cta"
+            href={PRIMARY_BOOK.url}
+            rel="nofollow sponsored noopener noreferrer"
+            target="_blank"
+          >
+            {PRIMARY_BOOK.label}
+            <span className="affiliate-sub">{PRIMARY_BOOK.sub}</span>
+          </a>
+        </>
       )}
       {bettingAllowed === false && (
         <p
@@ -125,7 +131,7 @@ export function AffiliateCTA({ style }: { style?: React.CSSProperties }) {
       <a
         className="affiliate-cta"
         href={FANTASY.url}
-        rel="nofollow sponsored"
+        rel="nofollow sponsored noopener noreferrer"
         target="_blank"
         style={{ background: "var(--blue)", marginTop: 8 }}
       >
