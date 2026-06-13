@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import { Footer } from "@/components/Footer";
 import "./globals.css";
 
@@ -59,6 +60,7 @@ export default function RootLayout({
       <body>
         {children}
         <Footer />
+        <Analytics />
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
           strategy="afterInteractive"
