@@ -12,6 +12,14 @@ import { fetchGameEnrichment, fetchLiveGames, fetchSeasonStatus, parseEventId } 
 
 const SAMPLE_MODE = process.env.DATA_MODE === "sample";
 
+// ---------------------------------------------------------------------------
+// inSeason cache — ESPN season-type checks are stable for hours, not seconds.
+// We cache the result for 1 hour so getSports() doesn't fire 7 ESPN calls on
+// every request. Cache is per-process (survives across ISR revalidations).
+// ---------------------------------------------------------------------------
+let seasonCache: { sports: Sport[]; expiresAt: number } | null = null;
+const SEASON_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+
 const FEATURE_PRIORITY: SportId[] = [
   "worldcup",
   "nba",
@@ -33,14 +41,23 @@ async function liveGamesFor(sport: SportId): Promise<GameDetail[] | null> {
 
 export async function getSports(): Promise<Sport[]> {
   if (SAMPLE_MODE) return SPORTS;
-  // Derive inSeason from live ESPN season type (4 = offseason) in parallel
+
+  // Return cached result if still fresh
+  if (seasonCache && Date.now() < seasonCache.expiresAt) {
+    return seasonCache.sports;
+  }
+
+  // Fetch all sport season statuses in parallel
   const results = await Promise.allSettled(
     SPORTS.map((s) => fetchSeasonStatus(s.id))
   );
-  return SPORTS.map((s, i) => {
+  const sports = SPORTS.map((s, i) => {
     const r = results[i];
     return r.status === "fulfilled" ? { ...s, inSeason: r.value } : s;
   });
+
+  seasonCache = { sports, expiresAt: Date.now() + SEASON_CACHE_TTL_MS };
+  return sports;
 }
 
 export async function getTodaysGames(sport?: SportId): Promise<GameSummary[]> {
