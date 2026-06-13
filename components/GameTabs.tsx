@@ -308,6 +308,30 @@ export function GameTabs({ game }: { game: GameDetail }) {
         {/* ---------------- Prediction ---------------- */}
         {tab === 5 && (
           <div>
+            {/* Final game: show whether model was right */}
+            {game.status === "final" && (() => {
+              const homeWon = (game.homeScore ?? 0) > (game.awayScore ?? 0);
+              const correct =
+                (homeWon && game.prediction.pickAbbr === game.home.abbr) ||
+                (!homeWon && game.prediction.pickAbbr === game.away.abbr);
+              return (
+                <div
+                  className="storyline"
+                  style={{
+                    borderLeftColor: correct ? "var(--green)" : "var(--red)",
+                    marginBottom: 16,
+                  }}
+                >
+                  <strong>Final: {game.away.abbr} {game.awayScore} – {game.home.abbr} {game.homeScore}</strong>
+                  <br />
+                  Model picked <strong>{game.prediction.pickTeamName}</strong> —{" "}
+                  {correct
+                    ? "✅ Correct. The model called this one."
+                    : "❌ Incorrect. The model missed this one."}
+                </div>
+              );
+            })()}
+
             <div className="prob-bar-wrap">
               <div className="prob-bar">
                 <div
@@ -326,11 +350,6 @@ export function GameTabs({ game }: { game: GameDetail }) {
                   {game.away.abbr} {probAway.toFixed(1)}%
                 </div>
               </div>
-            </div>
-
-            <div className="storyline" style={{ marginTop: 12 }}>
-              <strong>Why {probHome.toFixed(1)}%?</strong>{" "}
-              {game.prediction.methodology}
             </div>
 
             <div className="section-h">Factors</div>
@@ -364,6 +383,37 @@ export function GameTabs({ game }: { game: GameDetail }) {
                 Confidence: {game.prediction.confidence}
               </span>
             </div>
+
+            {/* How the model works */}
+            <details style={{ marginTop: 16 }}>
+              <summary
+                style={{
+                  fontSize: 13,
+                  color: "var(--text2)",
+                  cursor: "pointer",
+                  userSelect: "none",
+                  padding: "8px 0",
+                }}
+              >
+                ℹ️ How this model works
+              </summary>
+              <div
+                className="storyline"
+                style={{ marginTop: 8, fontSize: 13, lineHeight: 1.7 }}
+              >
+                <strong>Methodology:</strong> {game.prediction.methodology}
+                <br /><br />
+                <strong>Signal priority:</strong> Sportsbook moneylines (when available) →
+                season record differential → home-court/field advantage (+5%).
+                Win probability is clamped to 8–92% — extreme certainty is not
+                meaningful for sports outcomes. Confidence tiers: High ≥15pp edge,
+                Medium ≥7pp, Low &lt;7pp.
+                <br /><br />
+                <strong>Limitations:</strong> This model does not yet factor in recent
+                form streaks, injuries, rest days, or weather. These are planned
+                improvements as the data layer matures.
+              </div>
+            </details>
 
             {/* AFFILIATE PLACEMENT #2 — right after the pick, peak intent */}
             <AffiliateCTA style={{ marginTop: 16 }} />

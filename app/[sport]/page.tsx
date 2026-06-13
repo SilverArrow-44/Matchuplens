@@ -56,13 +56,15 @@ export default async function SportPage({ params }: Props) {
               : "Games"}
         </h1>
         <p className="page-sub">
-          {!sportInfo.inSeason
+          {!sportInfo.inSeason && games.length === 0
             ? `${sportInfo.label} is currently in the offseason. Check back when games resume.`
-            : games.length === 0
-              ? `No ${sportInfo.label} games scheduled right now. Check back soon.`
-              : games.every((g) => g.dateLabel === games[0].dateLabel)
-                ? `${sportInfo.label} matchups for ${games[0].dateLabel} — stats, history, and predictions.`
-                : `Upcoming ${sportInfo.label} matchups — stats, history, and predictions.`}
+            : !sportInfo.inSeason && games.length > 0
+              ? `Upcoming ${sportInfo.label} ${sport === "ufc" ? "fights" : sport === "soccer" || sport === "worldcup" ? "matches" : "games"} — stats, history, and predictions.`
+              : games.length === 0
+                ? `No ${sportInfo.label} games scheduled right now. Check back soon.`
+                : games.every((g) => g.dateLabel === games[0].dateLabel)
+                  ? `${sportInfo.label} matchups for ${games[0].dateLabel} — stats, history, and predictions.`
+                  : `Upcoming ${sportInfo.label} matchups — stats, history, and predictions.`}
         </p>
         {games.length > 0 ? (
           games.map((g) => <GameCard key={g.id} game={g} />)

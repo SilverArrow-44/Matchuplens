@@ -68,6 +68,34 @@ export function AffiliateCTA({ style }: { style?: React.CSSProperties }) {
 
   return (
     <div style={style}>
+      {/* Sponsored header */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 6,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: 1,
+            textTransform: "uppercase",
+            color: "var(--text3)",
+          }}
+        >
+          Sponsored
+        </span>
+        <a
+          href="/legal/affiliate-disclosure"
+          style={{ fontSize: 10, color: "var(--text3)" }}
+        >
+          Disclosure
+        </a>
+      </div>
+
       {/* Sportsbook CTA — hidden in restricted states */}
       {bettingAllowed === true && (
         <a

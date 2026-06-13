@@ -49,6 +49,15 @@ export default async function GamePage({ params }: Props) {
   const favProb =
     game.winProbHome >= 50 ? game.winProbHome : 100 - game.winProbHome;
 
+  // For final games: determine winner and whether model was correct
+  const isFinal = game.status === "final";
+  const homeWon = (game.homeScore ?? 0) > (game.awayScore ?? 0);
+  const winnerShort = homeWon ? game.home.shortName : game.away.shortName;
+  const modelCorrect = isFinal
+    ? (homeWon && game.prediction.pickAbbr === game.home.abbr) ||
+      (!homeWon && game.prediction.pickAbbr === game.away.abbr)
+    : false;
+
   // SportsEvent structured data — helps Google show rich results.
   const jsonLd = {
     "@context": "https://schema.org",
@@ -163,23 +172,43 @@ export default async function GamePage({ params }: Props) {
               )}
             </section>
 
-            {/* Answer-style summary (StatMuse-inspired): the takeaway
-                in one readable sentence before any tables. */}
+            {/* Answer-style summary: pre-game prediction OR post-game result */}
             <p className="answer-line">
-              <strong>
-                {game.away.shortName}{" "}
-                {game.sport === "ufc" || game.sport === "worldcup"
-                  ? "vs"
-                  : "at"}{" "}
-                {game.home.shortName}
-              </strong>{" "}
-              — {game.contextLabel ?? game.league}, <LocalTime utc={game.startTimeUTC} fallback={game.startTimeLocal} /> on{" "}
-              {game.broadcast}. Our model makes{" "}
-              <strong>
-                {favorite.shortName} the favorite at {favProb.toFixed(1)}%
-              </strong>
-              , leaning on {game.prediction.factors[0].name.toLowerCase()}.
-              Full reasoning in the Prediction tab.
+              {isFinal ? (
+                <>
+                  <strong>
+                    {game.away.shortName} {game.awayScore} –{" "}
+                    {game.home.shortName} {game.homeScore}
+                  </strong>{" "}
+                  — Final · {game.contextLabel ?? game.league}.{" "}
+                  <strong>{winnerShort} won.</strong>{" "}
+                  Our model picked {game.prediction.pickTeamName} —{" "}
+                  {modelCorrect ? "✓ correct call." : "✗ missed this one."}
+                </>
+              ) : (
+                <>
+                  <strong>
+                    {game.away.shortName}{" "}
+                    {game.sport === "ufc" || game.sport === "worldcup"
+                      ? "vs"
+                      : "at"}{" "}
+                    {game.home.shortName}
+                  </strong>{" "}
+                  — {game.contextLabel ?? game.league},{" "}
+                  <LocalTime
+                    utc={game.startTimeUTC}
+                    fallback={game.startTimeLocal}
+                  />{" "}
+                  on {game.broadcast}. Our model makes{" "}
+                  <strong>
+                    {favorite.shortName} the favorite at {favProb.toFixed(1)}%
+                  </strong>
+                  , leaning on{" "}
+                  {game.prediction.factors[0]?.name.toLowerCase() ??
+                    "recent form"}
+                  . Full reasoning in the Prediction tab.
+                </>
+              )}
             </p>
 
             <GameTabs game={game} />
