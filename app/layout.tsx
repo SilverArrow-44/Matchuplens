@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   },
   description:
     "Every game, every matchup: team stats, head-to-head history, injury reports, and win probability predictions for the FIFA World Cup 2026, NBA, NFL, MLB, NHL, UFC, and soccer.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
 };
 
 // Sets theme before first paint to avoid flash.
