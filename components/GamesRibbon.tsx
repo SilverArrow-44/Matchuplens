@@ -4,8 +4,17 @@ import { LocalTime } from "./LocalTime";
 
 export async function GamesRibbon() {
   const games = await getTodaysGames();
+  const liveCount = games.filter((g) => g.status === "live").length;
   return (
     <div className="ribbon">
+      {/* Mobile-only toggle — CSS-only via <details> */}
+      <details className="ribbon-details" open>
+        <summary className="ribbon-summary">
+          Today&rsquo;s games ({games.length})
+          {liveCount > 0 && (
+            <span className="ribbon-live"> · {liveCount} LIVE</span>
+          )}
+        </summary>
       <div className="ribbon-inner">
         {games.map((g) => (
           <Link
@@ -38,6 +47,7 @@ export async function GamesRibbon() {
           </Link>
         ))}
       </div>
+      </details>
     </div>
   );
 }

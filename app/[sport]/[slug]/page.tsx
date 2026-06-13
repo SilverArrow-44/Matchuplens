@@ -9,6 +9,7 @@ import Link from "next/link";
 import { GameCard } from "@/components/GameCard";
 import { AdSlot } from "@/components/AdSlot";
 import { LocalTime } from "@/components/LocalTime";
+import { MatchupAnalysis } from "@/components/MatchupAnalysis";
 import {
   getAllGameParams,
   getGameBySlug,
@@ -214,6 +215,8 @@ export default async function GamePage({ params }: Props) {
             <GameTabs game={game} />
 
             <AdSlot id="below-tabs" />
+
+            <MatchupAnalysis game={game} />
 
             {/* Internal links (StatMuse "Related searches" pattern) */}
             {otherGames.length > 0 && (

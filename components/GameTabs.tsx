@@ -62,6 +62,25 @@ export function GameTabs({ game }: { game: GameDetail }) {
   const probHome = game.prediction.winProbHome;
   const probAway = 100 - probHome;
 
+  // Confidence color
+  const confidenceColor =
+    game.prediction.confidence === "High"
+      ? "var(--green)"
+      : game.prediction.confidence === "Medium"
+        ? "var(--amber)"
+        : "var(--red)";
+
+  // Market agreement: compare betting market factor direction to model pick
+  const marketFactor = game.prediction.factors.find(
+    (f) => f.name === "Betting market"
+  );
+  const marketAgreement = marketFactor
+    ? (marketFactor.impact >= 0 && probHome >= 50) ||
+      (marketFactor.impact < 0 && probHome < 50)
+      ? "✓ Model agrees with market"
+      : "⚠ Model differs from market"
+    : null;
+
   return (
     <div>
       <div className="tabs" role="tablist">
@@ -379,9 +398,30 @@ export function GameTabs({ game }: { game: GameDetail }) {
               <div className="pick-label">MatchupLens Pick</div>
               <div className="pick-team">{game.prediction.pickTeamName}</div>
               <div className="pick-reason">{game.prediction.reasoning}</div>
-              <span className="confidence">
-                Confidence: {game.prediction.confidence}
-              </span>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10, alignItems: "center" }}>
+                <span
+                  className="confidence"
+                  style={{ background: `color-mix(in srgb, ${confidenceColor} 15%, transparent)`, color: confidenceColor, borderColor: `color-mix(in srgb, ${confidenceColor} 40%, transparent)` }}
+                >
+                  {game.prediction.confidence} confidence
+                </span>
+                {marketAgreement && (
+                  <span
+                    className="confidence"
+                    style={{
+                      color: marketAgreement.startsWith("✓") ? "var(--green)" : "var(--amber)",
+                      background: marketAgreement.startsWith("✓")
+                        ? "color-mix(in srgb, var(--green) 15%, transparent)"
+                        : "color-mix(in srgb, var(--amber) 15%, transparent)",
+                      borderColor: marketAgreement.startsWith("✓")
+                        ? "color-mix(in srgb, var(--green) 40%, transparent)"
+                        : "color-mix(in srgb, var(--amber) 40%, transparent)",
+                    }}
+                  >
+                    {marketAgreement}
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* How the model works */}

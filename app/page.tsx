@@ -22,11 +22,26 @@ export default async function HomePage() {
       <Topbar />
       <GamesRibbon />
       <main className="container" style={{ padding: "24px 16px" }}>
-        <h1 className="page-title">Today&rsquo;s Games</h1>
-        <p className="page-sub">
-          Stats, head-to-head history, injuries, and a prediction for every
-          matchup — {featured.dateLabel}.
-        </p>
+
+        {/* Brand hero */}
+        <div className="brand-hero">
+          <h1 className="brand-tagline">Know your edge before tip&#8209;off.</h1>
+          <p className="brand-sub">
+            Win probability, team stats, H2H history, and injury reports for
+            every game — updated live.
+          </p>
+          <div className="brand-chips">
+            <span className="brand-chip">📊 Team stats</span>
+            <span className="brand-chip">🔮 Win probability</span>
+            <span className="brand-chip">⚔️ Head-to-head</span>
+            <span className="brand-chip">🏥 Injuries</span>
+            <span className="brand-chip">🔴 Live scores</span>
+          </div>
+        </div>
+
+        <div className="section-h">
+          Featured matchup · {featured.dateLabel}
+        </div>
 
         {/* Featured game */}
         <Link

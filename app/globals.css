@@ -144,6 +144,29 @@ button { font-family: inherit; }
   overflow-x: auto;
   scrollbar-width: thin;
 }
+/* Mobile collapsible ribbon */
+.ribbon-details { display: contents; }
+.ribbon-summary { display: none; }
+@media (max-width: 767px) {
+  .ribbon { overflow-x: visible; }
+  .ribbon-details { display: block; }
+  .ribbon-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+  .ribbon-summary::-webkit-details-marker { display: none; }
+  .ribbon-summary::after { content: "▾"; font-size: 12px; color: var(--text3); }
+  .ribbon-details[open] .ribbon-summary::after { content: "▴"; }
+  .ribbon-details[open] .ribbon-inner { overflow-x: auto; scrollbar-width: thin; }
+  .ribbon-details:not([open]) .ribbon-inner { display: none; }
+}
 .ribbon-inner {
   display: flex;
   gap: 8px;
@@ -721,6 +744,51 @@ button { font-family: inherit; }
 /* ---------- Page titles ---------- */
 .page-title { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
 .page-sub { color: var(--text2); font-size: 14px; margin-bottom: 18px; }
+
+/* ---------- Brand hero (homepage) ---------- */
+.brand-hero {
+  padding: 20px 0 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.brand-tagline {
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.brand-sub {
+  font-size: 15px;
+  color: var(--text2);
+  margin-bottom: 14px;
+  max-width: 520px;
+}
+.brand-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.brand-chip {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .brand-tagline { font-size: 22px; }
+  .brand-sub { font-size: 14px; }
+}
+
+/* ---------- Analysis grid (matchup page) ---------- */
+.analysis-grid { grid-template-columns: 1fr 1fr; }
+@media (max-width: 600px) {
+  .analysis-grid { grid-template-columns: 1fr; }
+}
 
 /* ---------- Small screens ---------- */
 @media (max-width: 600px) {
