@@ -10,6 +10,7 @@ import { GameCard } from "@/components/GameCard";
 import { AdSlot } from "@/components/AdSlot";
 import { LocalTime } from "@/components/LocalTime";
 import { MatchupAnalysis } from "@/components/MatchupAnalysis";
+import { ShareButtons } from "@/components/ShareButtons";
 import {
   getAllGameParams,
   getGameBySlug,
@@ -180,6 +181,13 @@ export default async function GamePage({ params }: Props) {
                 </div>
               )}
             </section>
+
+            {/* Share buttons */}
+            <div style={{ marginBottom: 20 }}>
+              <ShareButtons
+                title={`${game.away.shortName} vs ${game.home.shortName} — ${game.league} Prediction`}
+              />
+            </div>
 
             {/* Answer-style summary: pre-game prediction OR post-game result */}
             <p className="answer-line">

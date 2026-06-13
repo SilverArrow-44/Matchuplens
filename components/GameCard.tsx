@@ -45,7 +45,11 @@ export function GameCard({ game }: { game: GameSummary }) {
               ? game.league
               : game.sport === "worldcup"
                 ? "FIFA WORLD CUP 2026"
-                : game.sport.toUpperCase()}
+                : game.sport === "ncaaf"
+                  ? "COLLEGE FOOTBALL"
+                  : game.sport === "ncaab"
+                    ? "COLLEGE BASKETBALL"
+                    : game.sport.toUpperCase()}
           </span>
           {game.contextLabel ?? game.league}
         </span>

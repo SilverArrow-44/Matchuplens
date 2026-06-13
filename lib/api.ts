@@ -1,6 +1,6 @@
 import type { GameDetail, GameSummary, Sport, SportId } from "./types";
 import { GAMES, SPORTS, FEATURED_GAME_ID } from "./sampleData";
-import { fetchGameEnrichment, fetchLiveGames, fetchSeasonStatus, parseEventId } from "./espn";
+import { fetchGameEnrichment, fetchGamesForDate, fetchLiveGames, fetchSeasonStatus, parseEventId } from "./espn";
 
 // ----------------------------------------------------------------------------
 // Data access layer — LIVE (ESPN) with sample-data fallback.
@@ -23,7 +23,9 @@ const SEASON_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const FEATURE_PRIORITY: SportId[] = [
   "worldcup",
   "nba",
+  "ncaab",
   "nhl",
+  "ncaaf",
   "ufc",
   "mlb",
   "soccer",
@@ -111,6 +113,36 @@ export async function getGameBySlug(
   } catch {
     return game;
   }
+}
+
+/**
+ * Fetch final games from the past N days for a sport.
+ * Used for "Recent Results" sections and evergreen SEO pages.
+ */
+export async function getRecentResults(
+  sport: SportId,
+  days = 7
+): Promise<GameSummary[]> {
+  if (SAMPLE_MODE) return [];
+  const dates: string[] = [];
+  for (let i = 1; i <= days; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(
+      d.getFullYear().toString() +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        String(d.getDate()).padStart(2, "0")
+    );
+  }
+  const results = await Promise.allSettled(
+    dates.map((date) => fetchGamesForDate(sport, date))
+  );
+  return results
+    .flatMap((r) => (r.status === "fulfilled" ? r.value : []))
+    .sort(
+      (a, b) =>
+        new Date(b.startTimeUTC).getTime() - new Date(a.startTimeUTC).getTime()
+    );
 }
 
 export async function getAllGameParams(): Promise<

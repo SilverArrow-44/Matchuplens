@@ -657,6 +657,8 @@ button { font-family: inherit; }
 .chip-ufc { background: rgba(192, 57, 43, 0.14); color: #c0392b; }
 .chip-soccer { background: rgba(30, 142, 78, 0.14); color: #1e8e4e; }
 .chip-nfl { background: rgba(125, 80, 170, 0.16); color: #7d50aa; }
+.chip-ncaaf { background: rgba(185, 90, 20, 0.15); color: #b95a14; }
+.chip-ncaab { background: rgba(20, 90, 185, 0.15); color: #1456b9; }
 .chip-worldcup { background: rgba(176, 132, 14, 0.16); color: #a07a10; }
 [data-theme="dark"] .chip-nba { color: #f0954a; }
 [data-theme="dark"] .chip-mlb { color: #6cacf2; }
@@ -664,6 +666,8 @@ button { font-family: inherit; }
 [data-theme="dark"] .chip-ufc { color: #f0796a; }
 [data-theme="dark"] .chip-soccer { color: #52c188; }
 [data-theme="dark"] .chip-nfl { color: #b78de0; }
+[data-theme="dark"] .chip-ncaaf { color: #f0894a; }
+[data-theme="dark"] .chip-ncaab { color: #6aacf2; }
 [data-theme="dark"] .chip-worldcup { color: #ecc24e; }
 
 /* ---------- Answer line ---------- */

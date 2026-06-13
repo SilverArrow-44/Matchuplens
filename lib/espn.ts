@@ -24,6 +24,8 @@ export const LEAGUE_PATH: Record<SportId, string> = {
   mlb: "baseball/mlb",
   nhl: "hockey/nhl",
   nfl: "football/nfl",
+  ncaaf: "football/college-football",
+  ncaab: "basketball/mens-college-basketball",
   ufc: "mma/ufc",
   soccer: "soccer/usa.1", // MLS
   worldcup: "soccer/fifa.world",
@@ -34,6 +36,8 @@ const LEAGUE_LABEL: Record<SportId, string> = {
   mlb: "MLB",
   nhl: "NHL",
   nfl: "NFL",
+  ncaaf: "College Football",
+  ncaab: "College Basketball",
   ufc: "UFC",
   soccer: "MLS",
   worldcup: "FIFA World Cup 2026",
@@ -471,4 +475,28 @@ export async function fetchLiveGames(sport: SportId): Promise<GameDetail[]> {
       }
     })
     .filter((g): g is GameDetail => g !== null);
+}
+
+/**
+ * Fetch completed games for a past date (YYYYMMDD format).
+ * Uses ESPN's ?dates= query param — same scoreboard endpoint.
+ */
+export async function fetchGamesForDate(
+  sport: SportId,
+  yyyymmdd: string
+): Promise<GameDetail[]> {
+  const data = await espnFetch(
+    `${LEAGUE_PATH[sport]}/scoreboard?dates=${yyyymmdd}`
+  );
+  const events: any[] = data.events ?? [];
+  return events
+    .map((e) => {
+      try {
+        return mapEvent(sport, e);
+      } catch {
+        return null;
+      }
+    })
+    .filter((g): g is GameDetail => g !== null)
+    .filter((g) => g.status === "final"); // only completed games
 }

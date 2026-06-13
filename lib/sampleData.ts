@@ -10,6 +10,8 @@ export const SPORTS: Sport[] = [
   { id: "worldcup", label: "World Cup 2026", inSeason: true },
   { id: "mlb", label: "MLB", inSeason: true },
   { id: "nhl", label: "NHL", inSeason: true },
+  { id: "ncaaf", label: "NCAAF", inSeason: false },
+  { id: "ncaab", label: "NCAAB", inSeason: false },
   { id: "ufc", label: "UFC", inSeason: true },
   { id: "soccer", label: "Soccer", inSeason: true },
   { id: "nfl", label: "NFL", inSeason: false },

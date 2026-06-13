@@ -7,6 +7,8 @@ export type SportId =
   | "nfl"
   | "mlb"
   | "nhl"
+  | "ncaaf"
+  | "ncaab"
   | "ufc"
   | "soccer"
   | "worldcup";
