@@ -1,6 +1,6 @@
 import type { GameDetail, GameSummary, Sport, SportId } from "./types";
 import { GAMES, SPORTS, FEATURED_GAME_ID } from "./sampleData";
-import { fetchLiveGames, fetchSeasonStatus, parseEventId } from "./espn";
+import { fetchGameEnrichment, fetchLiveGames, fetchSeasonStatus, parseEventId } from "./espn";
 
 // ----------------------------------------------------------------------------
 // Data access layer — LIVE (ESPN) with sample-data fallback.
@@ -77,7 +77,23 @@ export async function getGameBySlug(
   const eventId = parseEventId(slug);
   if (!eventId) return null;
   const live = await liveGamesFor(sport);
-  return live?.find((g) => g.id === eventId) ?? null;
+  const game = live?.find((g) => g.id === eventId) ?? null;
+  if (!game) return null;
+
+  // Enrich with per-game data: injuries from /summary, H2H from team schedule.
+  // Runs in parallel; each falls back gracefully on failure.
+  try {
+    const { injuries, h2h } = await fetchGameEnrichment(
+      sport,
+      eventId,
+      game.home,
+      game.away,
+      game.dateLabel
+    );
+    return { ...game, injuries, h2h };
+  } catch {
+    return game;
+  }
 }
 
 export async function getAllGameParams(): Promise<

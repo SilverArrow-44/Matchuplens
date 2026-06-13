@@ -1,5 +1,8 @@
 import type {
   GameDetail,
+  H2H,
+  H2HGame,
+  InjuryRow,
   PlayerCard,
   SportId,
   StatComparison,
@@ -287,6 +290,158 @@ function mapEvent(sport: SportId, event: any): GameDetail | null {
             : []),
         ]
       : [{ label: "Odds", value: "TBD" }],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Per-game enrichment: injuries (from /summary) + H2H (from /teams/schedule)
+// ---------------------------------------------------------------------------
+
+function mapInjuries(
+  data: any,
+  dateLabel: string
+): GameDetail["injuries"] {
+  const sections: any[] = data?.injuries ?? [];
+  if (!sections.length) {
+    return {
+      rows: [],
+      source: "ESPN · No injury report available for this game",
+      updated: dateLabel,
+    };
+  }
+
+  const rows: InjuryRow[] = [];
+  for (const section of sections) {
+    const teamAbbr: string = section.team?.abbreviation ?? "";
+    for (const inj of section.injuries ?? []) {
+      const rawStatus: string = inj.status ?? "Out";
+      // Map ESPN status → our InjuryRow status type
+      const status: InjuryRow["status"] =
+        rawStatus === "Active" || rawStatus === "Probable"
+          ? "Playing"
+          : rawStatus === "Questionable" || rawStatus === "Doubtful"
+            ? "Questionable"
+            : rawStatus === "Healthy"
+              ? "Healthy"
+              : "Out";
+      rows.push({
+        player: inj.athlete?.displayName ?? "Unknown",
+        teamAbbr,
+        injury:
+          inj.type?.description ??
+          inj.longComment ??
+          inj.shortComment ??
+          "Undisclosed",
+        status,
+      });
+    }
+  }
+
+  return { rows, source: "ESPN", updated: dateLabel };
+}
+
+function mapH2H(scheduleData: any, home: Team, away: Team): H2H {
+  const empty: H2H = { homeWins: 0, awayWins: 0, windowLabel: "", games: [], trend: "" };
+  const events: any[] = scheduleData?.events ?? [];
+  if (!events.length) return empty;
+
+  const meetings: H2HGame[] = [];
+  let homeWins = 0;
+  let awayWins = 0;
+
+  // Sort events newest-first
+  const sorted = [...events].sort(
+    (a, b) => new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime()
+  );
+
+  for (const event of sorted) {
+    const comp = event.competitions?.[0];
+    if (!comp) continue;
+    const competitors: any[] = comp.competitors ?? [];
+
+    // Only include games where the opponent is the away team
+    const homeComp = competitors.find(
+      (c: any) => c.team?.id === home.id || c.team?.abbreviation === home.abbr
+    );
+    const awayComp = competitors.find(
+      (c: any) => c.team?.id === away.id || c.team?.abbreviation === away.abbr
+    );
+    if (!homeComp || !awayComp) continue;
+
+    // Skip games without scores (not yet played)
+    const homeScore = homeComp.score != null ? Number(homeComp.score) : null;
+    const awayScore = awayComp.score != null ? Number(awayComp.score) : null;
+    if (homeScore == null || awayScore == null) continue;
+
+    const homeWon = homeScore > awayScore;
+    if (homeWon) homeWins++; else awayWins++;
+
+    const d = new Date(event.date ?? "");
+    const dateStr = isNaN(d.getTime())
+      ? "—"
+      : d.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          timeZone: "America/New_York",
+        });
+    const location = homeComp.homeAway === "home" ? home.abbr : away.abbr;
+
+    meetings.push({
+      date: dateStr,
+      score: `${away.abbr} ${awayScore}–${homeScore} ${home.abbr}`,
+      location,
+      winnerAbbr: homeWon ? home.abbr : away.abbr,
+    });
+
+    if (meetings.length >= 10) break;
+  }
+
+  if (!meetings.length) return empty;
+
+  const total = homeWins + awayWins;
+  const trend =
+    homeWins > awayWins
+      ? `${home.abbr} leads the series ${homeWins}–${awayWins} in the last ${total} meetings.`
+      : awayWins > homeWins
+        ? `${away.abbr} leads the series ${awayWins}–${homeWins} in the last ${total} meetings.`
+        : `Series is even at ${homeWins}–${awayWins} across the last ${total} meetings.`;
+
+  return {
+    homeWins,
+    awayWins,
+    windowLabel: `Last ${total} meeting${total === 1 ? "" : "s"}`,
+    games: meetings,
+    trend,
+  };
+}
+
+/**
+ * Enrich a game with injury data (from /summary) and H2H history
+ * (from the home team's season schedule, filtered for games vs the away team).
+ * Both fetches run in parallel; each fails gracefully.
+ */
+export async function fetchGameEnrichment(
+  sport: SportId,
+  eventId: string,
+  home: Team,
+  away: Team,
+  dateLabel: string
+): Promise<{ injuries: GameDetail["injuries"]; h2h: H2H }> {
+  // UFC schedules work differently — skip H2H for fights
+  const skipH2H = sport === "ufc";
+
+  const [summaryResult, scheduleResult] = await Promise.allSettled([
+    espnFetch(`${LEAGUE_PATH[sport]}/summary?event=${eventId}`),
+    skipH2H ? Promise.resolve(null) : espnFetch(`${LEAGUE_PATH[sport]}/teams/${home.id}/schedule`),
+  ]);
+
+  const summaryData = summaryResult.status === "fulfilled" ? summaryResult.value : null;
+  const scheduleData = scheduleResult.status === "fulfilled" ? scheduleResult.value : null;
+
+  return {
+    injuries: mapInjuries(summaryData, dateLabel),
+    h2h: scheduleData ? mapH2H(scheduleData, home, away) : { homeWins: 0, awayWins: 0, windowLabel: "", games: [], trend: "" },
   };
 }
 
