@@ -63,6 +63,12 @@ export default function RootLayout({
         {children}
         <Footer />
         <Analytics />
+        {/* Google AdSense — auto ads mode, loads after page is interactive */}
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7937234001453997"
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
           strategy="afterInteractive"
