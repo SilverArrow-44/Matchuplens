@@ -9,6 +9,7 @@ import { AdSlot } from "@/components/AdSlot";
 import { LocalTime } from "@/components/LocalTime";
 import { MatchupAnalysis } from "@/components/MatchupAnalysis";
 import { ShareButtons } from "@/components/ShareButtons";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 import {
   getAllGameParams,
   getGameBySlug,
@@ -253,6 +254,9 @@ export default async function GamePage({ params }: Props) {
             <GameTabs game={game} />
 
             <AdSlot id="below-tabs" />
+
+            {/* Newsletter — compact, after prediction tab, before analysis */}
+            <NewsletterSignup compact />
 
             <MatchupAnalysis game={game} />
 

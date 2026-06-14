@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { GameCard } from "@/components/GameCard";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { getSports, getTodaysGames, getRecentResults, isValidSport } from "@/lib/api";
 
 // Refresh live scores/odds every 60 seconds
@@ -84,6 +85,9 @@ export default async function SportPage({ params }: Props) {
         )}
 
         {/* Recent results — past 7 days */}
+        {/* Newsletter — compact variant between games list and recent results */}
+        <NewsletterSignup compact />
+
         {recentResults.length > 0 && (
           <section style={{ marginTop: 40 }}>
             <h2
