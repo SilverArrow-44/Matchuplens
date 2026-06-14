@@ -22,6 +22,7 @@ export function Footer() {
             ["Disclaimer",            "/legal/disclaimer"],
             ["Responsible Gambling",  "/legal/responsible-gambling"],
             ["Affiliate Disclosure",  "/legal/affiliate-disclosure"],
+            ["Methodology",           "/methodology"],
             ["Contact",               "/legal/contact"],
           ].map(([label, href]) => (
             <a key={href} href={href} style={{ color: "var(--text3)" }}>

@@ -90,6 +90,27 @@ export default async function GamePage({ params }: Props) {
         <div className="page-grid">
           <Sidebar game={game} />
           <div>
+            {/* ── Final game: recap banner — leads with result, not prediction ── */}
+            {isFinal && (
+              <div className={`recap-banner${modelCorrect ? " correct" : " incorrect"}`}>
+                <div className="recap-score">
+                  {game.away.abbr} {game.awayScore} – {game.home.abbr} {game.homeScore}
+                </div>
+                <div className="recap-result">
+                  <span className="recap-label">FINAL</span>
+                  <span className="recap-winner">
+                    {homeWon ? game.home.name : game.away.name} won
+                  </span>
+                </div>
+                <div className="recap-model">
+                  Model picked <strong>{game.prediction.pickTeamName}</strong>{" "}
+                  {modelCorrect
+                    ? <span style={{ color: "var(--green)" }}>✓ Correct call</span>
+                    : <span style={{ color: "var(--red)" }}>✗ Missed this one</span>}
+                </div>
+              </div>
+            )}
+
             {/* Hero */}
             <section className="hero">
               <div className="hero-context">{game.contextLabel}</div>
@@ -122,9 +143,11 @@ export default async function GamePage({ params }: Props) {
               {/* Info strip */}
               <div className="info-strip">
                 <div className="info-box">
-                  <div className="info-label">Start</div>
-                  <div className="info-value"><LocalTime utc={game.startTimeUTC} fallback={game.startTimeLocal} /></div>
-                  <div className="info-sub">{game.dateLabel}</div>
+                  <div className="info-label">{isFinal ? "Date" : "Start"}</div>
+                  <div className="info-value">
+                    {isFinal ? game.dateLabel : <LocalTime utc={game.startTimeUTC} fallback={game.startTimeLocal} />}
+                  </div>
+                  <div className="info-sub">{isFinal ? game.venue : game.dateLabel}</div>
                 </div>
                 <div className="info-box">
                   <div className="info-label">Venue</div>
@@ -136,12 +159,15 @@ export default async function GamePage({ params }: Props) {
                   <div className="info-value">{game.broadcast}</div>
                 </div>
                 <div className="info-box">
-                  <div className="info-label">Win probability</div>
-                  <div className="info-value" style={{ color: "var(--green)" }}>
+                  <div className="info-label">
+                    {isFinal ? "Pregame model" : "Win probability"}
+                  </div>
+                  <div className="info-value" style={{ color: isFinal ? "var(--text3)" : "var(--green)" }}>
                     {game.home.abbr} {game.winProbHome.toFixed(1)}%
                   </div>
                   <div className="info-sub">
                     {game.away.abbr} {(100 - game.winProbHome).toFixed(1)}%
+                    {isFinal && <span style={{ display: "block", fontSize: 10 }}>pre-game estimate</span>}
                   </div>
                 </div>
               </div>

@@ -58,23 +58,28 @@ export default async function SportPage({ params }: Props) {
           {sportInfo.label} {noun.charAt(0).toUpperCase() + noun.slice(1)}
         </h1>
         <p className="page-sub">
-          {!sportInfo.inSeason && games.length === 0
-            ? `${sportInfo.label} is currently in the offseason. Check back when games resume.`
-            : !sportInfo.inSeason && games.length > 0
-              ? `Upcoming ${sportInfo.label} ${noun} — stats, history, and predictions.`
-              : games.length === 0
-                ? `No ${sportInfo.label} ${noun} scheduled right now. Check back soon.`
-                : games.every((g) => g.dateLabel === games[0].dateLabel)
-                  ? `${sportInfo.label} matchups for ${games[0].dateLabel} — stats, history, and predictions.`
-                  : `Upcoming ${sportInfo.label} matchups — stats, history, and predictions.`}
+          {games.length === 0 && !sportInfo.inSeason
+            ? `${sportInfo.label} is currently in the offseason. Check back when ${noun} resume.`
+            : games.length === 0
+              ? `No ${sportInfo.label} ${noun} are scheduled right now. Check back soon.`
+              : games.every((g) => g.dateLabel === games[0].dateLabel)
+                ? `${sportInfo.label} ${noun} for ${games[0].dateLabel} — stats, history, and predictions.`
+                : `Upcoming ${sportInfo.label} ${noun} — stats, history, and predictions.`}
         </p>
 
-        {/* Today / upcoming games */}
+        {/* Games section — "Today" when in season, "Upcoming" when offseason with scheduled games */}
+        {games.length > 0 && (
+          <div className="section-h" style={{ marginBottom: 12 }}>
+            {!sportInfo.inSeason ? `Upcoming ${noun}` : `Today's ${noun}`}
+          </div>
+        )}
         {games.length > 0 ? (
           games.map((g) => <GameCard key={g.id} game={g} />)
         ) : (
           <div className="panel" style={{ color: "var(--text2)" }}>
-            Nothing scheduled today.
+            {sportInfo.inSeason
+              ? `No ${sportInfo.label} ${noun} scheduled today.`
+              : `${sportInfo.label} is in the offseason — no ${noun} scheduled yet.`}
           </div>
         )}
 

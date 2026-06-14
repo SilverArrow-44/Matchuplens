@@ -49,6 +49,8 @@ function ThemeToggleInline() {
 export function SiteHeaderClient({ sports, games }: Props) {
   const pathname = usePathname();
   const router = useRouter();
+  // Hide pills + ribbon on legal/static pages — they add crawl noise before unique content
+  const hidePillsAndRibbon = pathname.startsWith("/legal") || pathname === "/methodology";
   const searchRef = useRef<HTMLDivElement>(null);
 
   // Derive selected sport from URL path
@@ -75,10 +77,14 @@ export function SiteHeaderClient({ sports, games }: Props) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  // Games filtered by selected sport pill (for ribbon)
+  // Games filtered by selected sport pill (for ribbon), capped at 10
+  const RIBBON_MAX = 10;
   const ribbonGames = useMemo(() => {
-    if (selectedSport === "all") return games;
-    return games.filter((g) => g.sport === selectedSport);
+    const all = selectedSport === "all" ? games : games.filter((g) => g.sport === selectedSport);
+    return all.slice(0, RIBBON_MAX);
+  }, [games, selectedSport]);
+  const totalFiltered = useMemo(() => {
+    return selectedSport === "all" ? games.length : games.filter((g) => g.sport === selectedSport).length;
   }, [games, selectedSport]);
 
   // Search results across teams, venue, city, league, sport
@@ -217,34 +223,36 @@ export function SiteHeaderClient({ sports, games }: Props) {
         <ThemeToggleInline />
       </div>
 
-      {/* ── Line 2: Sport filter pills ── */}
-      <div className="sport-pills-wrap">
-        <div className="sport-pills">
-          <button
-            className={`sport-pill${selectedSport === "all" ? " active" : ""}`}
-            onClick={() => handleSportPill("all")}
-          >
-            All
-            {liveCount > 0 && <span className="pill-live"> · {liveCount} live</span>}
-          </button>
-          {sports.map((s) => {
-            const count = games.filter((g) => g.sport === s.id && g.status === "live").length;
-            return (
-              <button
-                key={s.id}
-                className={`sport-pill${selectedSport === s.id ? " active" : ""}`}
-                onClick={() => handleSportPill(s.id)}
-              >
-                {s.label}
-                {count > 0 && <span className="pill-live"> · {count}</span>}
-              </button>
-            );
-          })}
+      {/* ── Lines 2 + 3: hidden on legal/minimal pages ── */}
+      {!hidePillsAndRibbon && <>
+        {/* Line 2: Sport filter pills */}
+        <div className="sport-pills-wrap">
+          <div className="sport-pills">
+            <button
+              className={`sport-pill${selectedSport === "all" ? " active" : ""}`}
+              onClick={() => handleSportPill("all")}
+            >
+              All
+              {liveCount > 0 && <span className="pill-live"> · {liveCount} live</span>}
+            </button>
+            {sports.map((s) => {
+              const count = games.filter((g) => g.sport === s.id && g.status === "live").length;
+              return (
+                <button
+                  key={s.id}
+                  className={`sport-pill${selectedSport === s.id ? " active" : ""}`}
+                  onClick={() => handleSportPill(s.id)}
+                >
+                  {s.label}
+                  {count > 0 && <span className="pill-live"> · {count}</span>}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* ── Line 3: Game ribbon ── */}
-      <div className="ribbon-scroll">
+        {/* Line 3: Game ribbon */}
+        <div className="ribbon-scroll">
         {ribbonGames.length === 0 ? (
           <div style={{ padding: "10px 16px", fontSize: 13, color: "var(--text3)" }}>
             No games today for {sports.find((s) => s.id === selectedSport)?.label ?? selectedSport}.
@@ -293,9 +301,24 @@ export function SiteHeaderClient({ sports, games }: Props) {
                 </Link>
               );
             })}
+            {totalFiltered > RIBBON_MAX && (
+              <Link
+                href={selectedSport === "all" ? "/" : `/${selectedSport}`}
+                className="ribbon-card ribbon-card-more"
+              >
+                <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 4 }}>MORE</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "var(--blue)" }}>
+                  +{totalFiltered - RIBBON_MAX} games
+                </div>
+                <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 4 }}>
+                  View all →
+                </div>
+              </Link>
+            )}
           </div>
         )}
-      </div>
+        </div>{/* end ribbon-scroll */}
+      </>}{/* end hidePillsAndRibbon guard */}
     </header>
   );
 }

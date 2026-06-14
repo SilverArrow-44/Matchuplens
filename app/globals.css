@@ -283,6 +283,7 @@ button { font-family: inherit; }
 }
 .ribbon-card:hover { border-color: var(--border2); background: var(--bg4); }
 .ribbon-card.live { border-left: 3px solid var(--green); }
+.ribbon-card-more { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: var(--bg2); border-style: dashed; }
 .ribbon-league {
   font-size: 10px;
   font-weight: 700;
@@ -300,6 +301,49 @@ button { font-family: inherit; }
 /* Legacy alias — keep .logo colour for Topbar.tsx until fully removed */
 .sport-nav { display: none; }
 .sport-link { display: none; }
+
+/* ---------- Final game recap banner ---------- */
+.recap-banner {
+  border-radius: 12px;
+  padding: 20px 20px 16px;
+  margin-bottom: 20px;
+  border-left: 4px solid var(--border2);
+  background: var(--bg2);
+}
+.recap-banner.correct { border-left-color: var(--green); background: var(--pos-bg); }
+.recap-banner.incorrect { border-left-color: var(--red); background: var(--neg-bg); }
+.recap-score {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.recap-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.recap-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--bg4);
+  color: var(--text3);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.recap-winner {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.recap-model {
+  font-size: 13px;
+  color: var(--text2);
+}
 
 /* ---------- Layout ---------- */
 .page-grid {
