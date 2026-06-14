@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { Topbar } from "@/components/Topbar";
-import { GamesRibbon } from "@/components/GamesRibbon";
 
 export const metadata: Metadata = {
   title: "How Our Predictions Work — Methodology",
@@ -12,8 +10,6 @@ export const metadata: Metadata = {
 export default function MethodologyPage() {
   return (
     <>
-      <Topbar />
-      <GamesRibbon />
       <main className="container" style={{ padding: "40px 16px", maxWidth: 760 }}>
         <h1 className="page-title">How Our Predictions Work</h1>
         <p className="page-sub" style={{ marginBottom: 32 }}>

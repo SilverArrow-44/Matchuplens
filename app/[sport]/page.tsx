@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Topbar } from "@/components/Topbar";
-import { GamesRibbon } from "@/components/GamesRibbon";
 import { GameCard } from "@/components/GameCard";
 import { getSports, getTodaysGames, getRecentResults, isValidSport } from "@/lib/api";
 
@@ -55,8 +53,6 @@ export default async function SportPage({ params }: Props) {
 
   return (
     <>
-      <Topbar activeSport={sport} />
-      <GamesRibbon />
       <main className="container" style={{ padding: "24px 16px" }}>
         <h1 className="page-title">
           {sportInfo.label} {noun.charAt(0).toUpperCase() + noun.slice(1)}

@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Topbar } from "@/components/Topbar";
-import { GamesRibbon } from "@/components/GamesRibbon";
 import { Sidebar } from "@/components/Sidebar";
 import { GameTabs } from "@/components/GameTabs";
 import { TeamBadge } from "@/components/TeamBadge";
@@ -88,8 +86,6 @@ export default async function GamePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Topbar activeSport={sport} />
-      <GamesRibbon />
       <main className="container">
         <div className="page-grid">
           <Sidebar game={game} />

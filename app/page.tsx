@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { Topbar } from "@/components/Topbar";
-import { GamesRibbon } from "@/components/GamesRibbon";
 import { GameCard } from "@/components/GameCard";
 import { TeamBadge } from "@/components/TeamBadge";
 import { getFeaturedGame, getTodaysGames } from "@/lib/api";
@@ -19,8 +17,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <Topbar />
-      <GamesRibbon />
       <main className="container" style={{ padding: "24px 16px" }}>
 
         {/* Brand hero */}

@@ -66,70 +66,200 @@ button { font-family: inherit; }
   padding: 0 16px;
 }
 
-/* ---------- Topbar ---------- */
-.topbar {
+/* ══════════════════════════════════════════════════════
+   Site Header — 3-line sticky header
+   Line 1: Logo · Search · Theme toggle
+   Line 2: Sport pills (horizontal scroll)
+   Line 3: Game ribbon (horizontal scroll)
+   ══════════════════════════════════════════════════════ */
+
+.site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
-  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--bg) 96%, transparent);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 }
-.topbar-inner {
+
+/* ── Line 1 ── */
+.site-header-line1 {
   display: flex;
   align-items: center;
-  gap: 20px;
-  height: 56px;
+  gap: 10px;
+  padding: 0 16px;
+  height: 52px;
+  max-width: 100%;
 }
+
 .logo {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   white-space: nowrap;
+  flex-shrink: 0;
+  color: var(--text);
 }
 .logo span { color: var(--blue); }
-.sport-nav {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
+
+/* ── Search ── */
+.search-wrap {
   flex: 1;
+  position: relative;
+  min-width: 0;
 }
-.sport-nav::-webkit-scrollbar { display: none; }
-.sport-link {
-  padding: 7px 13px;
-  border-radius: 8px;
+.search-box {
+  display: flex;
+  align-items: center;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 10px;
+  gap: 7px;
+  height: 36px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.search-box:focus-within {
+  border-color: var(--blue);
+  background: var(--bg2);
+}
+.search-icon { color: var(--text3); flex-shrink: 0; }
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--text);
+  min-width: 0;
+}
+.search-input::placeholder { color: var(--text3); }
+/* remove browser-native clear button from type=search */
+.search-input::-webkit-search-cancel-button { display: none; }
+.search-clear {
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+/* Search dropdown */
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  z-index: 200;
+  overflow: hidden;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.search-hint {
+  padding: 8px 14px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.search-empty {
+  padding: 16px 14px;
+  font-size: 14px;
+  color: var(--text2);
+}
+.search-result {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.search-result:first-of-type { border-top: none; }
+.search-result:hover { background: var(--bg3); }
+.search-result-teams {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text2);
-  white-space: nowrap;
-  transition: background 0.15s, color 0.15s;
+  color: var(--text);
 }
-.sport-link:hover { background: var(--bg3); color: var(--text); }
-.sport-link.active { background: var(--bg4); color: var(--text); }
-
-/* ---------- Games ribbon ---------- */
-.ribbon {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
+.search-result-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
-.ribbon-label {
-  padding: 7px 16px 0;
-  font-size: 12px;
+.search-chip {
+  font-size: 10px;
   font-weight: 700;
-  color: var(--text3);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--bg4);
+  color: var(--text3);
 }
-.ribbon-live { color: var(--green); font-weight: 700; }
+.chip-nba { background: rgba(29,66,138,0.18); color: var(--blue); }
+.chip-nfl { background: rgba(0,130,75,0.18); color: var(--green); }
+.chip-mlb { background: rgba(192,57,43,0.18); color: var(--red); }
+.chip-nhl { background: rgba(45,111,194,0.18); color: var(--blue); }
+.chip-ufc { background: rgba(180,100,0,0.18); color: var(--amber); }
+.chip-worldcup { background: rgba(47,212,121,0.12); color: var(--green); }
 
-/* The actual scrolling container */
-.ribbon-scroll {
+/* ── Line 2: Sport pills ── */
+.sport-pills-wrap {
+  border-top: 1px solid var(--border);
   overflow-x: auto;
   overflow-y: hidden;
-  -webkit-overflow-scrolling: touch; /* iOS momentum scroll */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.sport-pills-wrap::-webkit-scrollbar { display: none; }
+.sport-pills {
+  display: flex;
+  gap: 6px;
+  padding: 6px 16px;
+  width: max-content;
+}
+.sport-pill {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1.5px solid transparent;
+  background: var(--bg3);
+  color: var(--text2);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.sport-pill:hover { background: var(--bg4); color: var(--text); }
+.sport-pill.active {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+[data-theme="dark"] .sport-pill.active { color: #0b0b0e; }
+.pill-live { color: var(--green); font-size: 11px; }
+
+/* ── Line 3: Game ribbon ── */
+.ribbon-scroll {
+  border-top: 1px solid var(--border);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-  padding-bottom: 4px;
 }
 .ribbon-scroll::-webkit-scrollbar { height: 3px; }
 .ribbon-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
@@ -138,7 +268,7 @@ button { font-family: inherit; }
   display: flex;
   gap: 8px;
   padding: 8px 16px 10px;
-  width: max-content; /* forces inner to be as wide as all cards combined */
+  width: max-content;
 }
 
 .ribbon-card {
@@ -149,6 +279,7 @@ button { font-family: inherit; }
   padding: 8px 12px;
   width: 148px;
   transition: border-color 0.15s, background 0.15s;
+  display: block;
 }
 .ribbon-card:hover { border-color: var(--border2); background: var(--bg4); }
 .ribbon-card.live { border-left: 3px solid var(--green); }
@@ -166,27 +297,9 @@ button { font-family: inherit; }
 .ribbon-row { display: flex; justify-content: space-between; gap: 8px; line-height: 1.6; }
 .ribbon-time { font-size: 11px; color: var(--text3); margin-top: 3px; }
 
-/* unused legacy — kept as placeholder */
-.ribbon2-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 4px;
-}
-.ribbon2-team {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.ribbon2-score {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text2);
-  flex-shrink: 0;
-}
+/* Legacy alias — keep .logo colour for Topbar.tsx until fully removed */
+.sport-nav { display: none; }
+.sport-link { display: none; }
 
 /* ---------- Layout ---------- */
 .page-grid {
