@@ -53,6 +53,7 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 15px;
   line-height: 1.6;
+  overflow-x: hidden; /* prevent any element from causing horizontal page scroll */
 }
 
 body { transition: background 0.2s, color 0.2s; }
@@ -148,7 +149,7 @@ button { font-family: inherit; }
 .ribbon-details { display: contents; }
 .ribbon-summary { display: none; }
 @media (max-width: 767px) {
-  .ribbon { overflow-x: visible; }
+  .ribbon { overflow-x: clip; }
   .ribbon-details { display: block; }
   .ribbon-summary {
     display: flex;

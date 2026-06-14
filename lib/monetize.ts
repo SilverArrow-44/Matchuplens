@@ -13,7 +13,15 @@ export interface AffiliateLink {
   url: string;
 }
 
-const env = (key: string) => process.env[key] || "#";
+// Fallback URLs — real site links until affiliate accounts are approved.
+// Replace with tracked affiliate URLs via .env.local when ready.
+const FALLBACKS: Record<string, string> = {
+  NEXT_PUBLIC_AFF_DRAFTKINGS: "https://www.draftkings.com",
+  NEXT_PUBLIC_AFF_FANDUEL: "https://www.fanduel.com",
+  NEXT_PUBLIC_AFF_UNDERDOG: "https://underdogfantasy.com",
+};
+
+const env = (key: string) => process.env[key] || FALLBACKS[key] || "#";
 
 // Primary sportsbook CTA — used below predictions and in the sidebar.
 export const PRIMARY_BOOK: AffiliateLink = {

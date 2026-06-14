@@ -424,6 +424,13 @@ export function GameTabs({ game }: { game: GameDetail }) {
               </div>
             </div>
 
+            {/* Prediction disclaimer */}
+            <p style={{ fontSize: 11, color: "var(--text3)", marginTop: 10, lineHeight: 1.5 }}>
+              For entertainment only. Not betting advice. You are solely responsible
+              for your wagering decisions.{" "}
+              <a href="/legal/disclaimer" style={{ color: "var(--blue)" }}>Full disclaimer →</a>
+            </p>
+
             {/* How the model works */}
             <details style={{ marginTop: 16 }}>
               <summary

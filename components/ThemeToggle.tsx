@@ -9,26 +9,30 @@ export function ThemeToggle() {
     setTheme(document.documentElement.dataset.theme ?? "dark");
   }, []);
 
-  function set(next: "light" | "dark") {
+  function toggle() {
+    const next = theme === "light" ? "dark" : "light";
     document.documentElement.dataset.theme = next;
     localStorage.setItem("theme", next);
     setTheme(next);
   }
 
   return (
-    <div className="theme-switch" role="group" aria-label="Color theme">
-      <button
-        className={`theme-opt${theme !== "light" ? " active" : ""}`}
-        onClick={() => set("dark")}
-      >
-        🌙 Dark
-      </button>
-      <button
-        className={`theme-opt${theme === "light" ? " active" : ""}`}
-        onClick={() => set("light")}
-      >
-        ☀️ Light
-      </button>
-    </div>
+    <button
+      onClick={toggle}
+      aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+      title={theme === "light" ? "Dark mode" : "Light mode"}
+      style={{
+        background: "var(--bg3)",
+        border: "1px solid var(--border)",
+        borderRadius: 8,
+        padding: "6px 10px",
+        fontSize: 16,
+        cursor: "pointer",
+        lineHeight: 1,
+        flexShrink: 0,
+      }}
+    >
+      {theme === "light" ? "🌙" : "☀️"}
+    </button>
   );
 }
