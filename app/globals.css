@@ -55,7 +55,7 @@ html, body {
   line-height: 1.6;
 }
 
-body { transition: background 0.2s, color 0.2s; }
+body { transition: background 0.2s, color 0.2s; overflow-x: hidden; }
 
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; }
@@ -80,6 +80,12 @@ button { font-family: inherit; }
   background: color-mix(in srgb, var(--bg) 96%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
+  /* Prevent ribbon-inner (width:max-content) from making the page scroll
+     horizontally — the ribbon-scroll container handles its own overflow.
+     overflow-x:clip clips visual bleed without breaking child scroll. */
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 /* ── Line 1 ── */

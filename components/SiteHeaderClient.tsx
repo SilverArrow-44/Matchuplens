@@ -355,9 +355,9 @@ export function SiteHeaderClient({ sports, games }: Props) {
                 </Link>
               );
             })}
-            {totalFiltered > RIBBON_MAX && (
+            {totalFiltered > RIBBON_MAX && selectedSport !== "all" && (
               <Link
-                href={selectedSport === "all" ? "/" : `/${selectedSport}`}
+                href={`/${selectedSport}`}
                 className="ribbon-card ribbon-card-more"
               >
                 <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 4 }}>MORE</div>
