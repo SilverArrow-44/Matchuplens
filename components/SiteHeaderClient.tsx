@@ -129,8 +129,8 @@ export function SiteHeaderClient({ sports, games }: Props) {
     };
   }, []);
 
-  // Games filtered by selected sport pill (for ribbon), live first, capped at 10
-  const RIBBON_MAX = 10;
+  // Games filtered by selected sport pill (for ribbon), live first, capped at 40
+  const RIBBON_MAX = 40;
   const STATUS_ORDER: Record<string, number> = { live: 0, scheduled: 1, postponed: 2, final: 3, cancelled: 4 };
   const ribbonGames = useMemo(() => {
     const all = selectedSport === "all" ? games : games.filter((g) => g.sport === selectedSport);
@@ -355,19 +355,29 @@ export function SiteHeaderClient({ sports, games }: Props) {
                 </Link>
               );
             })}
-            {totalFiltered > RIBBON_MAX && selectedSport !== "all" && (
-              <Link
-                href={`/${selectedSport}`}
-                className="ribbon-card ribbon-card-more"
-              >
-                <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 4 }}>MORE</div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "var(--blue)" }}>
-                  +{totalFiltered - RIBBON_MAX} games
+            {totalFiltered > RIBBON_MAX && (
+              selectedSport === "all" ? (
+                // On the homepage, all games are already below — just show the count
+                <div className="ribbon-card ribbon-card-more" style={{ cursor: "default" }}>
+                  <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 4 }}>MORE</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "var(--blue)" }}>
+                    +{totalFiltered - RIBBON_MAX} games
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 4 }}>
+                    Scroll down ↓
+                  </div>
                 </div>
-                <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 4 }}>
-                  View all →
-                </div>
-              </Link>
+              ) : (
+                <Link href={`/${selectedSport}`} className="ribbon-card ribbon-card-more">
+                  <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 4 }}>MORE</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "var(--blue)" }}>
+                    +{totalFiltered - RIBBON_MAX} games
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 4 }}>
+                    View all →
+                  </div>
+                </Link>
+              )
             )}
           </div>
         )}
