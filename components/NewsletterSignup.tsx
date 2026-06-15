@@ -1,28 +1,24 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useState } from "react";
 
-const BEEHIIV_FORM_ID = "c2e2ed48-99ea-40e5-b0a0-141acc61603a";
+const BEEHIIV_URL = "https://matchuplens.beehiiv.com/subscribe";
 
 interface Props {
-  /** Compact single-line variant for sport/game pages. Default is full card. */
   compact?: boolean;
 }
 
 export function NewsletterSignup({ compact = false }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [email, setEmail] = useState("");
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-    // Avoid double-injecting if component re-mounts
-    if (containerRef.current.querySelector("script")) return;
-
-    const script = document.createElement("script");
-    script.src = "https://subscribe-forms.beehiiv.com/v3/loader.js";
-    script.async = true;
-    script.setAttribute("data-beehiiv-form", BEEHIIV_FORM_ID);
-    containerRef.current.appendChild(script);
-  }, []);
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const url = email.trim()
+      ? `${BEEHIIV_URL}?email=${encodeURIComponent(email.trim())}`
+      : BEEHIIV_URL;
+    window.open(url, "_blank", "noopener,noreferrer");
+    setEmail("");
+  }
 
   if (compact) {
     return (
@@ -34,7 +30,17 @@ export function NewsletterSignup({ compact = false }: Props) {
             <div className="newsletter-compact-sub">Win probability + top edges before tip-off — free.</div>
           </div>
         </div>
-        <div ref={containerRef} className="newsletter-embed" />
+        <form className="newsletter-compact-form" onSubmit={handleSubmit}>
+          <input
+            type="email"
+            className="newsletter-input"
+            placeholder="your@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <button type="submit" className="newsletter-btn">Subscribe</button>
+        </form>
       </div>
     );
   }
@@ -46,19 +52,22 @@ export function NewsletterSignup({ compact = false }: Props) {
         <div>
           <div className="newsletter-title">Get today&rsquo;s top matchups</div>
           <div className="newsletter-sub">
-            Win probability, key stats, and our model&rsquo;s picks for every game —
-            delivered free before tip-off.
+            Win probability and picks for every game — free, before tip-off.
           </div>
         </div>
       </div>
-      <div ref={containerRef} className="newsletter-embed" />
-      <p className="newsletter-fine">
-        No spam. Unsubscribe any time. Powered by{" "}
-        <a href="https://beehiiv.com" target="_blank" rel="noopener noreferrer"
-          style={{ color: "var(--text3)" }}>
-          Beehiiv
-        </a>.
-      </p>
+      <form className="newsletter-form" onSubmit={handleSubmit}>
+        <input
+          type="email"
+          className="newsletter-input"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <button type="submit" className="newsletter-btn">Subscribe</button>
+      </form>
+      <p className="newsletter-fine">No spam. Unsubscribe any time.</p>
     </div>
   );
 }

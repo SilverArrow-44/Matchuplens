@@ -179,8 +179,13 @@ function mapPlayers(homeComp: any, awayComp: any): PlayerCard[] {
   return cards;
 }
 
-function mapEvent(sport: SportId, event: any): GameDetail | null {
-  const comp = event.competitions?.[0];
+/**
+ * Map a single game/bout. For UFC, pass `compOverride` = one entry from
+ * event.competitions[] so each bout becomes its own GameDetail.
+ * For other sports, `compOverride` is omitted and competitions[0] is used.
+ */
+function mapEvent(sport: SportId, event: any, compOverride?: any): GameDetail | null {
+  const comp = compOverride ?? event.competitions?.[0];
   if (!comp) return null;
   const competitors: any[] = comp.competitors ?? [];
   if (competitors.length < 2) return null;
@@ -192,8 +197,11 @@ function mapEvent(sport: SportId, event: any): GameDetail | null {
   const home = mapTeam(homeComp);
   const away = mapTeam(awayComp);
 
-  const state = event.status?.type?.state; // pre | in | post
-  const statusName: string = event.status?.type?.name ?? "";
+  // For UFC bouts use comp-level status (each bout tracks independently);
+  // for all other sports use event-level status.
+  const statusSource = compOverride ? comp : event;
+  const state = statusSource.status?.type?.state; // pre | in | post
+  const statusName: string = statusSource.status?.type?.name ?? "";
   const isPostponed =
     statusName.includes("POSTPONED") || statusName.includes("SUSPENDED");
   const isCancelled =
@@ -238,16 +246,26 @@ function mapEvent(sport: SportId, event: any): GameDetail | null {
       text: `<strong>Betting line:</strong> ${sanitizeHtml(odds.details)}${odds.overUnder ? ` · O/U ${odds.overUnder}` : ""}`,
     });
 
+  // For UFC: use the bout/competition ID so each fight gets a unique URL.
+  // For all other sports: use the event ID.
+  const gameId = compOverride ? String(comp.id) : String(event.id);
+
+  // For UFC bouts: contextLabel = card name + weight class
+  const weightClass: string | undefined = compOverride ? comp.type?.abbreviation : undefined;
+  const ufcContextLabel = weightClass
+    ? [event.name, weightClass].filter(Boolean).join(" · ")
+    : event.name;
+
   return {
-    id: String(event.id),
+    id: gameId,
     sport,
     league: LEAGUE_LABEL[sport],
-    slug: buildSlug(away, home, String(event.id)),
+    slug: buildSlug(away, home, gameId),
     home,
     away,
     status,
     startTimeLocal: time,
-    startTimeUTC: event.date ?? new Date().toISOString(),
+    startTimeUTC: (compOverride ? comp.date : event.date) ?? new Date().toISOString(),
     dateLabel: date,
     venue: comp.venue?.fullName ?? "TBD",
     city: [comp.venue?.address?.city, comp.venue?.address?.state]
@@ -259,12 +277,12 @@ function mapEvent(sport: SportId, event: any): GameDetail | null {
     awayScore: awayComp.score ? Number(awayComp.score) : undefined,
     period:
       status === "live"
-        ? event.status?.type?.shortDetail ?? "LIVE"
+        ? statusSource.status?.type?.shortDetail ?? "LIVE"
         : undefined,
     winProbHome: prediction.winProbHome,
-    contextLabel: [note ?? LEAGUE_LABEL[sport], seriesSummary]
-      .filter(Boolean)
-      .join(" · "),
+    contextLabel: compOverride
+      ? ufcContextLabel
+      : [note ?? LEAGUE_LABEL[sport], seriesSummary].filter(Boolean).join(" · "),
     overview: {
       recapTitle:
         status === "final"
@@ -466,6 +484,23 @@ export async function fetchSeasonStatus(sport: SportId): Promise<boolean> {
 export async function fetchLiveGames(sport: SportId): Promise<GameDetail[]> {
   const data = await espnFetch(`${LEAGUE_PATH[sport]}/scoreboard`);
   const events: any[] = data.events ?? [];
+
+  // UFC: ESPN returns one event card with N competitions (bouts).
+  // Expand each bout into its own GameDetail so the full card is visible.
+  if (sport === "ufc") {
+    return events
+      .flatMap((e) =>
+        (e.competitions ?? []).map((comp: any) => {
+          try {
+            return mapEvent(sport, e, comp);
+          } catch {
+            return null;
+          }
+        })
+      )
+      .filter((g): g is GameDetail => g !== null);
+  }
+
   return events
     .map((e) => {
       try {
