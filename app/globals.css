@@ -260,9 +260,14 @@ button { font-family: inherit; }
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
+  cursor: grab;
+  user-select: none;
 }
-.ribbon-scroll::-webkit-scrollbar { height: 3px; }
+.ribbon-scroll:active { cursor: grabbing; }
+.ribbon-scroll::-webkit-scrollbar { height: 4px; }
 .ribbon-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+/* Links inside ribbon should show pointer when not drag-scrolling */
+.ribbon-scroll .ribbon-card { cursor: pointer; }
 
 .ribbon-inner {
   display: flex;

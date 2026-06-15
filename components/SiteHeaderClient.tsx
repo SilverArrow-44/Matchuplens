@@ -52,6 +52,9 @@ export function SiteHeaderClient({ sports, games }: Props) {
   // Hide pills + ribbon on legal/static pages — they add crawl noise before unique content
   const hidePillsAndRibbon = pathname.startsWith("/legal") || pathname === "/methodology";
   const searchRef = useRef<HTMLDivElement>(null);
+  const ribbonRef = useRef<HTMLDivElement>(null);
+  // Track drag state so we can scroll on mouse-drag and still allow normal link clicks
+  const drag = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false });
 
   // Derive selected sport from URL path
   const pathSeg = pathname.split("/")[1] ?? "";
@@ -77,11 +80,62 @@ export function SiteHeaderClient({ sports, games }: Props) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  // Games filtered by selected sport pill (for ribbon), capped at 10
+  // Mouse drag-to-scroll for the game ribbon (desktop UX)
+  useEffect(() => {
+    const el = ribbonRef.current;
+    if (!el) return;
+    const d = drag.current;
+
+    const onDown = (e: MouseEvent) => {
+      d.active = true;
+      d.startX = e.pageX;
+      d.scrollLeft = el.scrollLeft;
+      d.moved = false;
+      el.style.cursor = "grabbing";
+    };
+    const onMove = (e: MouseEvent) => {
+      if (!d.active) return;
+      const dx = e.pageX - d.startX;
+      if (Math.abs(dx) > 4) {
+        d.moved = true;
+        el.scrollLeft = d.scrollLeft - dx;
+      }
+    };
+    const onUp = () => {
+      d.active = false;
+      el.style.cursor = "";
+    };
+    // Prevent link navigation if the mouse moved during drag
+    const onClick = (e: MouseEvent) => {
+      if (d.moved) {
+        e.preventDefault();
+        e.stopPropagation();
+        d.moved = false;
+      }
+    };
+    const noDrag = (e: Event) => e.preventDefault();
+
+    el.addEventListener("mousedown", onDown);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    el.addEventListener("click", onClick, true);
+    el.addEventListener("dragstart", noDrag);
+    return () => {
+      el.removeEventListener("mousedown", onDown);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      el.removeEventListener("click", onClick, true);
+      el.removeEventListener("dragstart", noDrag);
+    };
+  }, []);
+
+  // Games filtered by selected sport pill (for ribbon), live first, capped at 10
   const RIBBON_MAX = 10;
+  const STATUS_ORDER: Record<string, number> = { live: 0, scheduled: 1, postponed: 2, final: 3, cancelled: 4 };
   const ribbonGames = useMemo(() => {
     const all = selectedSport === "all" ? games : games.filter((g) => g.sport === selectedSport);
-    return all.slice(0, RIBBON_MAX);
+    const sorted = [...all].sort((a, b) => (STATUS_ORDER[a.status] ?? 1) - (STATUS_ORDER[b.status] ?? 1));
+    return sorted.slice(0, RIBBON_MAX);
   }, [games, selectedSport]);
   const totalFiltered = useMemo(() => {
     return selectedSport === "all" ? games.length : games.filter((g) => g.sport === selectedSport).length;
@@ -252,7 +306,7 @@ export function SiteHeaderClient({ sports, games }: Props) {
         </div>
 
         {/* Line 3: Game ribbon */}
-        <div className="ribbon-scroll">
+        <div className="ribbon-scroll" ref={ribbonRef}>
         {ribbonGames.length === 0 ? (
           <div style={{ padding: "10px 16px", fontSize: 13, color: "var(--text3)" }}>
             No games today for {sports.find((s) => s.id === selectedSport)?.label ?? selectedSport}.
