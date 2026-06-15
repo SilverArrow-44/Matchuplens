@@ -14,7 +14,26 @@ export default async function HomePage() {
     getFeaturedGame(),
     getTodaysGames(),
   ]);
-  const rest = games.filter((g) => g.id !== featured.id);
+
+  // Get today's date string in ET (YYYY-MM-DD) for filtering stale games
+  const todayET = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+
+  const STATUS_ORDER: Record<string, number> = { live: 0, scheduled: 1, postponed: 2, final: 3, cancelled: 4 };
+
+  const rest = games
+    .filter((g) => g.id !== featured.id)
+    // Drop finished games that started on a previous day — they're "yesterday's news"
+    .filter((g) => {
+      if (g.status !== "final" && g.status !== "cancelled") return true;
+      const gameDay = new Date(g.startTimeUTC).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+      return gameDay >= todayET;
+    })
+    // Live first → upcoming by start time → finished games last
+    .sort((a, b) => {
+      const so = (STATUS_ORDER[a.status] ?? 1) - (STATUS_ORDER[b.status] ?? 1);
+      if (so !== 0) return so;
+      return new Date(a.startTimeUTC).getTime() - new Date(b.startTimeUTC).getTime();
+    });
 
   return (
     <>
