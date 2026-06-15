@@ -18,7 +18,7 @@ import {
 } from "@/lib/api";
 
 // Refresh live scores/odds every 60 seconds; unknown slugs render on demand
-export const revalidate = 60;
+export const revalidate = 300;
 export const dynamicParams = true;
 
 interface Props {

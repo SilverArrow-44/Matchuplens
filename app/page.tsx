@@ -7,7 +7,7 @@ import { LocalTime } from "@/components/LocalTime";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 // Refresh live scores/odds every 60 seconds
-export const revalidate = 60;
+export const revalidate = 300;
 
 export default async function HomePage() {
   const [featured, games] = await Promise.all([
