@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
   },
 
   images: {
+    // ESPN logos are already CDN-optimized — bypass Vercel image transforms
+    // to stay within the free tier (5,000 transforms/month).
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "a.espncdn.com" },
       { protocol: "https", hostname: "a1.espncdn.com" },
