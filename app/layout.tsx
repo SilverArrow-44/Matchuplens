@@ -57,18 +57,18 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+        {/* AdSense — in <head> so crawlers find it in raw HTML */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7937234001453997"
+          crossOrigin="anonymous"
+        />
       </head>
       <body>
         <SiteHeader />
         {children}
         <Footer />
         <Analytics />
-        {/* Google AdSense — auto ads mode, loads after page is interactive */}
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7937234001453997"
-          strategy="afterInteractive"
-          crossOrigin="anonymous"
-        />
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
           strategy="afterInteractive"
