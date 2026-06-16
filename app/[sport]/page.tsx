@@ -5,7 +5,7 @@ import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { getSports, getTodaysGames, getRecentResults, isValidSport } from "@/lib/api";
 
 // Refresh live scores/odds every 60 seconds
-export const revalidate = 300;
+export const revalidate = 600;
 
 interface Props {
   params: Promise<{ sport: string }>;

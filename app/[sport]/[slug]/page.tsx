@@ -17,8 +17,8 @@ import {
   isValidSport,
 } from "@/lib/api";
 
-// Refresh live scores/odds every 60 seconds; unknown slugs render on demand
-export const revalidate = 300;
+// Revalidate every 10 min — still fresh for a prediction site, ~10x fewer ISR writes than 60s
+export const revalidate = 600;
 export const dynamicParams = true;
 
 interface Props {
