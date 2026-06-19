@@ -796,7 +796,9 @@ button { font-family: inherit; }
 /* ---------- Section headers ---------- */
 .section-h {
   font-size: var(--fs-12); font-weight: var(--fw-bold); text-transform: uppercase;
-  letter-spacing: var(--ls-wide); color: var(--text3); margin: 22px 0 11px; font-family: var(--font-mono);
+  letter-spacing: var(--ls-wide); color: var(--text2); margin: 22px 0 11px; font-family: var(--font-mono);
+  padding-left: 10px;
+  border-left: 3px solid var(--green);
 }
 .section-h:first-child { margin-top: 0; }
 
@@ -897,10 +899,11 @@ button { font-family: inherit; }
 .brand-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .brand-chip {
   font-size: var(--fs-12); font-weight: var(--fw-semibold); padding: 5px 12px;
-  border-radius: var(--r-full); background: var(--bg2); border: 1px solid var(--border);
-  color: var(--text2); white-space: nowrap; transition: border-color var(--dur-fast), color var(--dur-fast);
+  border-radius: var(--r-full); background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text2); white-space: nowrap;
+  cursor: default; pointer-events: none;
+  user-select: none;
 }
-.brand-chip:hover { border-color: var(--border2); color: var(--text); }
 @media (max-width: 600px) {
   .brand-tagline { font-size: var(--fs-28); }
   .brand-sub { font-size: var(--fs-14); }

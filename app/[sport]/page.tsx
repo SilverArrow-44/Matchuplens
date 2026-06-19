@@ -47,10 +47,25 @@ export default async function SportPage({ params }: Props) {
         ? "matches"
         : "games";
 
-  const [games, recentResults] = await Promise.all([
+  const [allGames, recentResults] = await Promise.all([
     getTodaysGames(sport),
     getRecentResults(sport, 7),
   ]);
+
+  // Drop stale finals from previous days (same filter as homepage)
+  const todayET = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const games = allGames.filter((g) => {
+    if (g.status !== "final" && g.status !== "cancelled") return true;
+    const gameDay = new Date(g.startTimeUTC).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+    return gameDay >= todayET;
+  });
+
+  // Determine if any game is actually scheduled for today
+  const gamesAreToday = games.some((g) => {
+    const gameDay = new Date(g.startTimeUTC).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+    return gameDay === todayET;
+  });
+  const sectionLabel = gamesAreToday ? `Today's ${noun}` : `Upcoming ${noun}`;
 
   return (
     <>
@@ -63,15 +78,15 @@ export default async function SportPage({ params }: Props) {
             ? `${sportInfo.label} is currently in the offseason. Check back when ${noun} resume.`
             : games.length === 0
               ? `No ${sportInfo.label} ${noun} are scheduled right now. Check back soon.`
-              : games.every((g) => g.dateLabel === games[0].dateLabel)
-                ? `${sportInfo.label} ${noun} for ${games[0].dateLabel} — stats, history, and predictions.`
+              : gamesAreToday
+                ? `${sportInfo.label} ${noun} for today — stats, history, and predictions.`
                 : `Upcoming ${sportInfo.label} ${noun} — stats, history, and predictions.`}
         </p>
 
-        {/* Games section — "Today" when in season, "Upcoming" when offseason with scheduled games */}
+        {/* Games section — "Today's" only when games are actually today */}
         {games.length > 0 && (
           <div className="section-h" style={{ marginBottom: 12 }}>
-            {!sportInfo.inSeason ? `Upcoming ${noun}` : `Today's ${noun}`}
+            {sectionLabel}
           </div>
         )}
         {games.length > 0 ? (
