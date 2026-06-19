@@ -19,8 +19,8 @@ export default function ContactPage() {
         <div style={{ display: "grid", gap: 16 }}>
           <div className="storyline" style={{ borderLeftColor: "var(--blue)" }}>
             <strong>General enquiries</strong><br />
-            <a href="mailto:duddukuruprasanth@gmail.com" style={{ color: "var(--blue)" }}>
-              duddukuruprasanth@gmail.com
+            <a href="mailto:picklytools@gmail.com" style={{ color: "var(--blue)" }}>
+              picklytools@gmail.com
             </a>
             <br />
             <span style={{ fontSize: 13, color: "var(--text3)" }}>We aim to respond within 2 business days.</span>
@@ -28,8 +28,8 @@ export default function ContactPage() {
 
           <div className="storyline" style={{ borderLeftColor: "var(--green)" }}>
             <strong>Advertising &amp; partnerships</strong><br />
-            <a href="mailto:duddukuruprasanth@gmail.com?subject=Partnership%20Enquiry" style={{ color: "var(--blue)" }}>
-              duddukuruprasanth@gmail.com
+            <a href="mailto:picklytools@gmail.com?subject=Partnership%20Enquiry" style={{ color: "var(--blue)" }}>
+              picklytools@gmail.com
             </a>
             <br />
             <span style={{ fontSize: 13, color: "var(--text3)" }}>Subject: Partnership Enquiry</span>
