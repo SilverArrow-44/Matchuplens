@@ -23,6 +23,7 @@ const SEASON_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const FEATURE_PRIORITY: SportId[] = [
   "worldcup",
   "nba",
+  "wnba",
   "ncaab",
   "nhl",
   "ncaaf",

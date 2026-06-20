@@ -12,7 +12,7 @@ interface Props {
 }
 
 const SPORT_IDS = new Set([
-  "nba", "nfl", "mlb", "nhl", "ncaaf", "ncaab", "ufc", "soccer", "worldcup",
+  "nba", "wnba", "nfl", "mlb", "nhl", "ncaaf", "ncaab", "ufc", "soccer", "worldcup",
 ]);
 
 // Short date for the compact ribbon: "Aug 29, 2026" -> "Aug 29".

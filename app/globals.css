@@ -780,6 +780,7 @@ button { font-family: inherit; }
   margin-right: 8px; vertical-align: middle; font-family: var(--font-mono);
 }
 .chip-nba { background: rgba(229, 117, 31, 0.16); color: #d4731f; }
+.chip-wnba { background: rgba(196, 75, 140, 0.16); color: #c44b8c; }
 .chip-mlb { background: rgba(31, 103, 188, 0.14); color: #2d6fc2; }
 .chip-nhl { background: rgba(94, 114, 158, 0.18); color: #5e729e; }
 .chip-ufc { background: rgba(192, 57, 43, 0.14); color: #c0392b; }
@@ -789,6 +790,7 @@ button { font-family: inherit; }
 .chip-ncaab { background: rgba(20, 90, 185, 0.15); color: #1456b9; }
 .chip-worldcup { background: rgba(47, 212, 121, 0.14); color: var(--green); }
 [data-theme="dark"] .chip-nba { color: #f0954a; background: rgba(229,117,31,0.14); }
+[data-theme="dark"] .chip-wnba { color: #e87ab5; }
 [data-theme="dark"] .chip-mlb { color: #6cacf2; }
 [data-theme="dark"] .chip-nhl { color: #93a6cf; }
 [data-theme="dark"] .chip-ufc { color: #f0796a; }

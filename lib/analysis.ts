@@ -263,7 +263,7 @@ function buildTeamSportsAnalysis(game: GameDetail): MatchupAnalysis {
 
   // Sport-appropriate home advantage phrasing
   const homeVenueNote =
-    game.sport === "nba" || game.sport === "ncaab"
+    game.sport === "nba" || game.sport === "ncaab" || game.sport === "wnba"
       ? "home teams win roughly 58% of games in basketball"
       : game.sport === "nfl" || game.sport === "ncaaf"
         ? "home teams hold a proven edge in football"

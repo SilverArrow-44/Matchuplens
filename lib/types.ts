@@ -4,6 +4,7 @@
 
 export type SportId =
   | "nba"
+  | "wnba"
   | "nfl"
   | "mlb"
   | "nhl"

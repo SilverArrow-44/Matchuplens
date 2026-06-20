@@ -7,6 +7,7 @@ import type { GameDetail, GameSummary, Sport, Team } from "./types";
 
 export const SPORTS: Sport[] = [
   { id: "nba", label: "NBA", inSeason: true },
+  { id: "wnba", label: "WNBA", inSeason: true },
   { id: "worldcup", label: "World Cup 2026", inSeason: true },
   { id: "mlb", label: "MLB", inSeason: true },
   { id: "nhl", label: "NHL", inSeason: true },

@@ -21,6 +21,7 @@ const BASE = "https://site.api.espn.com/apis/site/v2/sports";
 
 export const LEAGUE_PATH: Record<SportId, string> = {
   nba: "basketball/nba",
+  wnba: "basketball/wnba",
   mlb: "baseball/mlb",
   nhl: "hockey/nhl",
   nfl: "football/nfl",
@@ -33,6 +34,7 @@ export const LEAGUE_PATH: Record<SportId, string> = {
 
 const LEAGUE_LABEL: Record<SportId, string> = {
   nba: "NBA",
+  wnba: "WNBA",
   mlb: "MLB",
   nhl: "NHL",
   nfl: "NFL",
