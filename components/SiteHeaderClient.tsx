@@ -23,6 +23,13 @@ const shortDate = (label: string) => label.replace(/,\s*\d{4}$/, "");
 const RIBBON_MAX = 40;
 const STATUS_ORDER: Record<string, number> = { live: 0, scheduled: 1, postponed: 2, final: 3, cancelled: 4 };
 
+// Rough popularity ranking — used only as a tiebreaker for the sport pills,
+// after "has games now" and "in season". Lower = more prominent.
+const POPULARITY: Record<string, number> = {
+  nfl: 0, nba: 1, mlb: 2, worldcup: 3, soccer: 4,
+  ufc: 5, ncaaf: 6, ncaab: 7, nhl: 8, wnba: 9,
+};
+
 function ThemeToggleInline() {
   const [theme, setTheme] = useState<string | null>(null);
   useEffect(() => {
@@ -185,6 +192,19 @@ export function SiteHeaderClient({ sports, games }: Props) {
 
   const liveCount = games.filter((g) => g.status === "live").length;
 
+  // Pill order: sports with games now → in-season sports → rest, each tier
+  // broken by popularity. Keeps the bar leading with clickable content and
+  // lets NFL/college rise in fall and sink in summer automatically.
+  const orderedSports = useMemo(() => {
+    const withGames = new Set(games.map((g) => g.sport));
+    const tier = (s: Sport) => (withGames.has(s.id) ? 0 : s.inSeason ? 1 : 2);
+    return [...sports].sort((a, b) => {
+      const t = tier(a) - tier(b);
+      if (t !== 0) return t;
+      return (POPULARITY[a.id] ?? 99) - (POPULARITY[b.id] ?? 99);
+    });
+  }, [sports, games]);
+
   function handleSportPill(id: string) {
     setSelectedSport(id);
     setQuery("");
@@ -310,7 +330,7 @@ export function SiteHeaderClient({ sports, games }: Props) {
               All
               {liveCount > 0 && <span className="pill-live"> · {liveCount} live</span>}
             </button>
-            {sports.map((s) => {
+            {orderedSports.map((s) => {
               const count = games.filter((g) => g.sport === s.id && g.status === "live").length;
               return (
                 <button
