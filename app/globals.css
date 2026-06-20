@@ -65,7 +65,7 @@
   --neg-bg: rgba(226, 59, 93, 0.08);
 
   /* Surfaces & effects */
-  --glass: color-mix(in srgb, #ffffff 66%, transparent);
+  --glass: color-mix(in srgb, #ffffff 92%, transparent);
   --glass-border: rgba(10, 18, 13, 0.07);
   --accent-glow: rgba(34, 229, 138, 0.18);
   --ring: rgba(14, 159, 116, 0.30);
@@ -99,7 +99,7 @@
   --neg-bg: rgba(255, 91, 120, 0.13);
 
   /* Surfaces & effects */
-  --glass: color-mix(in srgb, #0c0f0d 60%, transparent);
+  --glass: color-mix(in srgb, #0c0f0d 93%, transparent);
   --glass-border: rgba(255, 255, 255, 0.07);
   --accent-glow: rgba(52, 229, 138, 0.28);
   --ring: rgba(79, 227, 194, 0.38);
@@ -610,8 +610,11 @@ button { font-family: inherit; }
   display: flex; gap: 4px; margin-top: 22px;
   border-bottom: 1px solid var(--border);
   overflow-x: auto; scrollbar-width: none;
-  position: sticky; top: 56px;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  /* Park just below the sticky header. --header-h is measured in JS
+     (SiteHeaderClient) so it tracks the real 3-line header height; falls
+     back to the single-line height if the variable isn't set yet. */
+  position: sticky; top: var(--header-h, 56px);
+  background: color-mix(in srgb, var(--bg) 96%, transparent);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   z-index: 50;
 }

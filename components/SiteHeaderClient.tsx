@@ -58,6 +58,7 @@ export function SiteHeaderClient({ sports, games }: Props) {
   const hidePillsAndRibbon = pathname.startsWith("/legal") || pathname === "/methodology";
   const searchRef = useRef<HTMLDivElement>(null);
   const ribbonRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   // Track drag state so we can scroll on mouse-drag and still allow normal link clicks
   const drag = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false });
 
@@ -73,6 +74,20 @@ export function SiteHeaderClient({ sports, games }: Props) {
   useEffect(() => {
     setSelectedSport(urlSport);
   }, [urlSport]);
+
+  // Publish the live header height as --header-h so the sticky tab bar (and any
+  // other below-header sticky) can park exactly under the full 3-line header,
+  // which changes height when the ribbon is empty vs full or on legal pages.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const publishHeaderHeight = () =>
+      document.documentElement.style.setProperty("--header-h", `${el.offsetHeight}px`);
+    publishHeaderHeight();
+    const ro = new ResizeObserver(publishHeaderHeight);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // Close search dropdown on outside click
   useEffect(() => {
@@ -185,7 +200,7 @@ export function SiteHeaderClient({ sports, games }: Props) {
   }
 
   return (
-    <header className="site-header">
+    <header className="site-header" ref={headerRef}>
       {/* ── Line 1: Logo · Search · Theme ── */}
       <div className="site-header-line1">
         <Link href="/" className="logo">
