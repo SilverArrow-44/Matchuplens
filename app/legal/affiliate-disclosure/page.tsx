@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Affiliate Disclosure — MatchupLens",
@@ -57,7 +58,7 @@ export default function AffiliateDisclosurePage() {
         <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>Questions</h2>
         <p>
           Questions about our affiliate relationships?{" "}
-          <a href="/legal/contact" style={{ color: "var(--blue)" }}>Contact us</a>.
+          <Link href="/legal/contact" style={{ color: "var(--blue)" }}>Contact us</Link>.
         </p>
       </div>
     </article>

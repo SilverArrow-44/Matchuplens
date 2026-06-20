@@ -6,7 +6,7 @@ import { AdSlot } from "@/components/AdSlot";
 import { LocalTime } from "@/components/LocalTime";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 
-// Refresh live scores/odds every 60 seconds
+// Refresh live scores/odds every 5 minutes (ISR-write-friendly)
 export const revalidate = 300;
 
 export default async function HomePage() {

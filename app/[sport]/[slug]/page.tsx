@@ -49,7 +49,9 @@ export default async function GamePage({ params }: Props) {
   const game = await getGameBySlug(sport, slug);
   if (!game) notFound();
 
-  const otherGames = (await getTodaysGames()).filter((g) => g.id !== game.id);
+  // Same-sport slate only — avoids fanning out an ESPN call across all 9 sports
+  // on every game-page render just to fill the "More matchups today" footer.
+  const otherGames = (await getTodaysGames(sport)).filter((g) => g.id !== game.id);
   const favorite = game.winProbHome >= 50 ? game.home : game.away;
   const favProb =
     game.winProbHome >= 50 ? game.winProbHome : 100 - game.winProbHome;
@@ -69,7 +71,8 @@ export default async function GamePage({ params }: Props) {
     "@type": "SportsEvent",
     name: `${game.away.name} vs ${game.home.name}`,
     description: game.contextLabel ?? game.league,
-    startDate: game.dateLabel,
+    // Must be ISO-8601 for Google to validate the rich result.
+    startDate: game.startTimeUTC,
     location: {
       "@type": "Place",
       name: game.venue,

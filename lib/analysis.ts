@@ -218,7 +218,6 @@ function buildTeamSportsAnalysis(game: GameDetail): MatchupAnalysis {
   const probAway = (100 - game.winProbHome).toFixed(1);
   const favorite = game.winProbHome >= 50 ? game.home : game.away;
   const underdog = game.winProbHome >= 50 ? game.away : game.home;
-  const favProb = game.winProbHome >= 50 ? probHome : probAway;
   const margin = Math.abs(game.winProbHome - 50);
 
   const homeHasRecord = hasRecord(game.home.record);

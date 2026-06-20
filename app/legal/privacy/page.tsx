@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — MatchupLens",
@@ -51,7 +52,7 @@ export default function PrivacyPage() {
 
         <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>6. Contact</h2>
         <p>
-          For privacy-related questions, contact us at <a href="/legal/contact" style={{ color: "var(--blue)" }}>our contact page</a>.
+          For privacy-related questions, contact us at <Link href="/legal/contact" style={{ color: "var(--blue)" }}>our contact page</Link>.
         </p>
       </div>
     </article>

@@ -4,7 +4,7 @@ import { GameCard } from "@/components/GameCard";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { getSports, getTodaysGames, getRecentResults, isValidSport } from "@/lib/api";
 
-// Refresh live scores/odds every 60 seconds
+// Refresh live scores/odds every 10 minutes (ISR-write-friendly)
 export const revalidate = 600;
 
 interface Props {

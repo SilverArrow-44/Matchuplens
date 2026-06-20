@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Terms of Service — MatchupLens",
@@ -38,7 +39,7 @@ export default function TermsPage() {
           MatchupLens participates in affiliate programs with third-party sportsbooks and fantasy
           sports platforms. We may earn a commission when you click affiliate links and sign up for
           their services. This does not affect our editorial content or predictions. See our full
-          <a href="/legal/affiliate-disclosure" style={{ color: "var(--blue)" }}> Affiliate Disclosure</a>.
+          <Link href="/legal/affiliate-disclosure" style={{ color: "var(--blue)" }}> Affiliate Disclosure</Link>.
         </p>
 
         <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>4. Data Accuracy</h2>
@@ -69,7 +70,7 @@ export default function TermsPage() {
         </p>
 
         <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>8. Contact</h2>
-        <p>Questions about these Terms? <a href="/legal/contact" style={{ color: "var(--blue)" }}>Contact us</a>.</p>
+        <p>Questions about these Terms? <Link href="/legal/contact" style={{ color: "var(--blue)" }}>Contact us</Link>.</p>
       </div>
     </article>
   );

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Contact — MatchupLens",
@@ -44,7 +45,7 @@ export default function ContactPage() {
           <div className="storyline" style={{ borderLeftColor: "var(--text3)" }}>
             <strong>Responsible gambling</strong><br />
             If you have a gambling problem, please reach out to the{" "}
-            <a href="/legal/responsible-gambling" style={{ color: "var(--blue)" }}>resources on our Responsible Gambling page</a>
+            <Link href="/legal/responsible-gambling" style={{ color: "var(--blue)" }}>resources on our Responsible Gambling page</Link>
             {" "}rather than contacting us — they can provide immediate professional support.
           </div>
         </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "How Our Predictions Work — Methodology",
@@ -33,12 +34,14 @@ export default function MethodologyPage() {
             <li>
               <strong>Season record differential</strong> — if no odds are
               available, we estimate win probability from the gap between each
-              team's win percentage.
+              team&rsquo;s win percentage.
             </li>
             <li>
-              <strong>Home-court/field advantage</strong> — we apply a small
-              upward adjustment (~3 pp) for the home side. This is not applied
-              at neutral sites or for UFC bouts.
+              <strong>Home-court/field advantage</strong> — when no market odds
+              are available, we apply a fixed +5 percentage-point adjustment for
+              the home side. This is not applied at neutral sites or for UFC
+              bouts. (When market odds <em>are</em> available, home advantage is
+              already priced into the line, so we don&rsquo;t add it again.)
             </li>
           </ol>
         </div>
@@ -46,13 +49,15 @@ export default function MethodologyPage() {
         <div className="panel" style={{ marginBottom: 20 }}>
           <div className="panel-title">Confidence levels</div>
           <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--text2)" }}>
-            We display a confidence tier (High / Medium / Low) that reflects
-            the model's certainty, not its accuracy:
+            We display a confidence tier (High / Medium / Low) based on how far
+            the favorite&rsquo;s win probability sits from a 50/50 coin flip
+            (the &ldquo;edge&rdquo;). It reflects the model&rsquo;s certainty,
+            not its accuracy:
           </p>
           <ul style={{ paddingLeft: 20, fontSize: 14, lineHeight: 2, color: "var(--text2)" }}>
-            <li><strong>High</strong> — live market odds available; win prob ≥ 65%.</li>
-            <li><strong>Medium</strong> — odds available or clear record differential; win prob 55–64%.</li>
-            <li><strong>Low</strong> — no odds; small record gap; near 50/50.</li>
+            <li><strong>High</strong> — edge of 15 points or more (favorite ≥ 65% or ≤ 35%).</li>
+            <li><strong>Medium</strong> — edge of 7 to 14 points.</li>
+            <li><strong>Low</strong> — edge under 7 points (within ~7% of even).</li>
           </ul>
         </div>
 
@@ -60,9 +65,9 @@ export default function MethodologyPage() {
           <div className="panel-title">Market agreement</div>
           <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--text2)" }}>
             When odds are available, we show whether our model pick agrees or
-            disagrees with the betting market. "Agrees with market" means the
-            model and the market favor the same side. "Disagrees with market"
-            is displayed as a note — not as a betting signal.
+            disagrees with the betting market. &ldquo;Agrees with market&rdquo;
+            means the model and the market favor the same side. &ldquo;Disagrees
+            with market&rdquo; is displayed as a note — not as a betting signal.
           </p>
         </div>
 
@@ -79,9 +84,10 @@ export default function MethodologyPage() {
         <div className="panel" style={{ marginBottom: 20 }}>
           <div className="panel-title">Data source</div>
           <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--text2)" }}>
-            Team records, scores, and odds are sourced from ESPN's public
-            scoreboard API. Data revalidates every 60 seconds during live
-            games. ESPN is not a sponsor or affiliate of MatchupLens.
+            Team records, scores, and odds are sourced from ESPN&rsquo;s public
+            scoreboard API. Pages refresh roughly every 5 minutes on the
+            homepage and every 10 minutes on individual game pages. ESPN is not
+            a sponsor or affiliate of MatchupLens.
           </p>
         </div>
 
@@ -93,9 +99,9 @@ export default function MethodologyPage() {
             not indicative of future results. If you choose to wager, please do
             so responsibly and within your means. Sports betting involves risk
             of financial loss.{" "}
-            <a href="/legal/responsible-gambling" style={{ color: "var(--blue)" }}>
+            <Link href="/legal/responsible-gambling" style={{ color: "var(--blue)" }}>
               Responsible gambling resources →
-            </a>
+            </Link>
           </p>
         </div>
       </main>

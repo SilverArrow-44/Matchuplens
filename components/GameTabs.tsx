@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
+import Link from "next/link";
 import type { GameDetail, StatComparison } from "@/lib/types";
 import { AffiliateCTA } from "./AffiliateCTA";
 
@@ -233,10 +234,10 @@ export function GameTabs({ game }: { game: GameDetail }) {
         )}
         {tab === 3 && (
           <div className="player-grid">
-            {game.players.map((p) => {
+            {game.players.map((p, i) => {
               const isHome = p.teamAbbr === game.home.abbr;
               return (
-                <div className="player-card" key={p.name}>
+                <div className="player-card" key={`${p.name}-${i}`}>
                   <div className="player-head">
                     <div
                       className="player-avatar"
@@ -307,8 +308,8 @@ export function GameTabs({ game }: { game: GameDetail }) {
                 </tr>
               </thead>
               <tbody>
-                {game.injuries.rows.map((r) => (
-                  <tr key={r.player}>
+                {game.injuries.rows.map((r, i) => (
+                  <tr key={`${r.player}-${r.teamAbbr}-${i}`}>
                     <td>{r.player}</td>
                     <td>{r.teamAbbr}</td>
                     <td>{r.injury}</td>
@@ -428,7 +429,7 @@ export function GameTabs({ game }: { game: GameDetail }) {
             <p style={{ fontSize: 11, color: "var(--text3)", marginTop: 10, lineHeight: 1.5 }}>
               For entertainment only. Not betting advice. You are solely responsible
               for your wagering decisions.{" "}
-              <a href="/legal/disclaimer" style={{ color: "var(--blue)" }}>Full disclaimer →</a>
+              <Link href="/legal/disclaimer" style={{ color: "var(--blue)" }}>Full disclaimer →</Link>
             </p>
 
             {/* How the model works */}

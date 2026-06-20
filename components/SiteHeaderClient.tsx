@@ -15,6 +15,11 @@ const SPORT_IDS = new Set([
   "nba", "nfl", "mlb", "nhl", "ncaaf", "ncaab", "ufc", "soccer", "worldcup",
 ]);
 
+// Module-scope constants — stable identity so they don't need to be listed as
+// hook dependencies in the memos below.
+const RIBBON_MAX = 40;
+const STATUS_ORDER: Record<string, number> = { live: 0, scheduled: 1, postponed: 2, final: 3, cancelled: 4 };
+
 function ThemeToggleInline() {
   const [theme, setTheme] = useState<string | null>(null);
   useEffect(() => {
@@ -129,9 +134,7 @@ export function SiteHeaderClient({ sports, games }: Props) {
     };
   }, []);
 
-  // Games filtered by selected sport pill (for ribbon), live first, capped at 40
-  const RIBBON_MAX = 40;
-  const STATUS_ORDER: Record<string, number> = { live: 0, scheduled: 1, postponed: 2, final: 3, cancelled: 4 };
+  // Games filtered by selected sport pill (for ribbon), live first, capped at RIBBON_MAX
   const ribbonGames = useMemo(() => {
     const all = selectedSport === "all" ? games : games.filter((g) => g.sport === selectedSport);
     const sorted = [...all].sort((a, b) => (STATUS_ORDER[a.status] ?? 1) - (STATUS_ORDER[b.status] ?? 1));

@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { PRIMARY_BOOK, FANTASY } from "@/lib/monetize";
 
 // States where online sports betting is not currently legal.
 // DraftKings/FanDuel also geo-gate on their end, but we hide the CTA
 // proactively to comply with affiliate ToS and avoid confusion.
+// NOTE: betting legality changes — review this list periodically.
+// Last reviewed: 2026-06.
 const RESTRICTED_BETTING_STATES = new Set([
   "AL", // Alabama
   "AK", // Alaska
@@ -21,19 +24,33 @@ const RESTRICTED_BETTING_STATES = new Set([
   "WI", // Wisconsin
 ]);
 
-const GEO_CACHE_KEY = "ml_geo_v1";
+// Bumped to v2: cache now stores country too (v1 entries lack it and are ignored).
+const GEO_CACHE_KEY = "ml_geo_v2";
 const GEO_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-function getCachedState(): string | null {
+interface GeoCache {
+  country: string;
+  state: string;
+  ts: number;
+}
+
+function getCachedGeo(): { country: string; state: string } | null {
   try {
     const raw = localStorage.getItem(GEO_CACHE_KEY);
     if (!raw) return null;
-    const { state, ts } = JSON.parse(raw) as { state: string; ts: number };
-    if (Date.now() - ts > GEO_TTL_MS) return null;
-    return state;
+    const { country, state, ts } = JSON.parse(raw) as GeoCache;
+    if (typeof country !== "string" || Date.now() - ts > GEO_TTL_MS) return null;
+    return { country, state };
   } catch {
     return null;
   }
+}
+
+// Sportsbook CTA is US-only. Allowed only inside the US AND outside a
+// restricted state. Everything else (international, restricted, unknown)
+// is treated as not-allowed so the sportsbook link never leaks.
+function isBettingAllowed(country: string, state: string): boolean {
+  return country === "US" && !RESTRICTED_BETTING_STATES.has(state);
 }
 
 export function AffiliateCTA({ style }: { style?: React.CSSProperties }) {
@@ -41,23 +58,24 @@ export function AffiliateCTA({ style }: { style?: React.CSSProperties }) {
   const [bettingAllowed, setBettingAllowed] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const cached = getCachedState();
+    const cached = getCachedGeo();
     if (cached !== null) {
-      setBettingAllowed(!RESTRICTED_BETTING_STATES.has(cached));
+      setBettingAllowed(isBettingAllowed(cached.country, cached.state));
       return;
     }
 
     fetch("https://ipapi.co/json/")
       .then((r) => r.json())
-      .then((data: { region_code?: string }) => {
+      .then((data: { country_code?: string; region_code?: string }) => {
+        const country = data.country_code ?? "";
         const state = data.region_code ?? "";
         try {
           localStorage.setItem(
             GEO_CACHE_KEY,
-            JSON.stringify({ state, ts: Date.now() })
+            JSON.stringify({ country, state, ts: Date.now() })
           );
         } catch {}
-        setBettingAllowed(!RESTRICTED_BETTING_STATES.has(state));
+        setBettingAllowed(isBettingAllowed(country, state));
       })
       .catch(() => {
         // On geo-detection error (ad blocker, VPN, network failure), show
@@ -89,12 +107,12 @@ export function AffiliateCTA({ style }: { style?: React.CSSProperties }) {
         >
           Sponsored
         </span>
-        <a
+        <Link
           href="/legal/affiliate-disclosure"
           style={{ fontSize: 10, color: "var(--text3)" }}
         >
           Disclosure
-        </a>
+        </Link>
       </div>
 
       {/* Sportsbook CTA — hidden in restricted states, never shown on geo error */}
@@ -123,7 +141,7 @@ export function AffiliateCTA({ style }: { style?: React.CSSProperties }) {
             margin: "6px 0",
           }}
         >
-          Sports betting not available in your state.
+          Sports betting not available in your region.
         </p>
       )}
 

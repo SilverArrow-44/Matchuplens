@@ -104,7 +104,7 @@ export default async function Image({ params }: Props) {
             }}
           >
             {game.away.logo && (
-              // eslint-disable-next-line @next/next/no-img-element
+               
               <img
                 src={game.away.logo}
                 width={120}
@@ -208,7 +208,7 @@ export default async function Image({ params }: Props) {
             }}
           >
             {game.home.logo && (
-              // eslint-disable-next-line @next/next/no-img-element
+               
               <img
                 src={game.home.logo}
                 width={120}

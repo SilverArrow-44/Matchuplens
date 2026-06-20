@@ -19,7 +19,7 @@ app/
   [sport]/page.tsx          Sport listing (/nba, /mlb, /nhl, /soccer, /nfl)
   [sport]/[slug]/page.tsx   Game detail — hero, info strip, series tracker, 6 tabs
   globals.css               Full design system (dark theme, CSS variables)
-components/                 Topbar, GamesRibbon, Sidebar, GameCard, GameTabs, Footer
+components/                 SiteHeader, Sidebar, GameCard, GameTabs, MatchupAnalysis, Footer
 lib/
   types.ts                  Data contracts (mirror real sports-API shapes)
   sampleData.ts             SAMPLE DATA — 5 games across NBA/MLB/NHL/MLS
@@ -48,10 +48,10 @@ Suggested order:
 - URL pattern: `/nba/knicks-vs-spurs-game-5-prediction-june-11-2026` (matches "team vs team prediction" searches)
 - Per-game `generateMetadata` produces unique titles/descriptions
 - All pages statically prerendered (`generateStaticParams`)
-- Next steps: add `sitemap.ts`, `robots.ts`, and JSON-LD `SportsEvent` schema
+- `sitemap.ts`, `robots.ts`, and JSON-LD `SportsEvent` schema are in place
 
 ## Compliance notes
 
 - You're an affiliate, not a sportsbook — no license needed, but each affiliate program has state-level rules
-- Add IP geolocation later to hide betting CTAs in restricted states
+- IP geolocation gates the sportsbook CTA: shown only to US visitors outside restricted states (`components/AffiliateCTA.tsx`); review the restricted-state list periodically as laws change
 - Keep 21+ and 1-800-GAMBLER messaging on any page with betting links

@@ -53,12 +53,24 @@ const LOWER_IS_BETTER = /turnover|error|against|absorbed|allowed|fouls/i;
  * Prevents potential XSS from unexpected HTML in the ESPN API response.
  */
 function sanitizeHtml(raw: string): string {
-  return raw.replace(/<(?!\/?(?:strong|em)\b)[^>]*>/gi, "").trim();
+  return (
+    raw
+      // Drop every tag that isn't <strong>/<em> (opening or closing).
+      .replace(/<(?!\/?(?:strong|em)\b)[^>]*>/gi, "")
+      // Strip any attributes (e.g. onclick=, style=) from the allowed tags,
+      // so a crafted `<strong onmouseover=...>` can't survive the filter.
+      .replace(/<(strong|em)\b[^>]*>/gi, "<$1>")
+      .trim()
+  );
 }
 
 async function espnFetch(path: string): Promise<any> {
   const res = await fetch(`${BASE}/${path}`, {
-    next: { revalidate: 60 },
+    // Cache for 10 min. This is the FLOOR for the fetch cache, not the page.
+    // Each route's own `export const revalidate` (300 home / 600 sport+game)
+    // still governs regeneration frequency — set to 600 so this fetch never
+    // drags a route below its intended cadence (which would inflate ISR writes).
+    next: { revalidate: 600 },
     headers: { "User-Agent": "MatchupLens/1.0" },
   });
   if (!res.ok) throw new Error(`ESPN ${path}: ${res.status}`);

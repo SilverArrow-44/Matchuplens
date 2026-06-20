@@ -37,8 +37,8 @@ export function Sidebar({ game }: { game: GameDetail }) {
         <div className="panel-title">
           {game.sport === "ufc" ? "The fighters" : "Players to watch"}
         </div>
-        {game.players.slice(0, 4).map((p) => (
-          <div className="side-row" key={p.name}>
+        {game.players.slice(0, 4).map((p, i) => (
+          <div className="side-row" key={`${p.name}-${i}`}>
             <span className="side-label">
               {p.name}
               <span style={{ color: "var(--text3)", fontSize: 12 }}>
@@ -47,9 +47,9 @@ export function Sidebar({ game }: { game: GameDetail }) {
               </span>
             </span>
             <span className="side-value">
-              {p.stats[0].value}{" "}
+              {p.stats[0]?.value ?? "—"}{" "}
               <span style={{ color: "var(--text3)", fontSize: 11 }}>
-                {p.stats[0].label}
+                {p.stats[0]?.label ?? ""}
               </span>
             </span>
           </div>

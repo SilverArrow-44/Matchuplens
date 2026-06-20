@@ -45,7 +45,7 @@ export const viewport: Viewport = {
 };
 
 // Sets theme before first paint to avoid flash.
-// Light is the default; a saved visitor choice always wins.
+// Dark is the default; a saved visitor choice always wins.
 const themeInit = `
 try {
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";

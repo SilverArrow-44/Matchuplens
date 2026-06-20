@@ -149,7 +149,8 @@ export async function getAllGameParams(): Promise<
   { sport: string; slug: string }[]
 > {
   // Used by sitemap + static generation. Live slugs included when reachable;
-  // new games render on demand (dynamicParams) and revalidate every 60s.
+  // new games render on demand (dynamicParams) and revalidate per the
+  // route segment config (600s for game pages).
   const games = await getTodaysGames();
   return games.map((g) => ({ sport: g.sport, slug: g.slug }));
 }
