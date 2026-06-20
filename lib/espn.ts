@@ -501,12 +501,18 @@ function todayYYYYMMDD(): string {
 }
 
 export async function fetchLiveGames(sport: SportId): Promise<GameDetail[]> {
-  // Query TODAY explicitly. ESPN's bare /scoreboard lingers on the last
-  // completed slate (yesterday's finals) until the new day's games populate,
-  // which made pages show "no games today" while the ribbon showed stale finals.
-  const data = await espnFetch(
+  // Prefer TODAY's slate. ESPN's bare /scoreboard lingers on the last completed
+  // slate (yesterday's finals) for daily sports, which made pages show "no games
+  // today" while the ribbon showed stale finals.
+  // BUT for weekly sports (NFL, UFC, college) today is usually empty — there the
+  // bare slate is exactly what we want (the upcoming week's games). So: query
+  // today, and only if it's empty fall back to ESPN's natural upcoming slate.
+  let data = await espnFetch(
     `${LEAGUE_PATH[sport]}/scoreboard?dates=${todayYYYYMMDD()}`
   );
+  if (!data.events?.length) {
+    data = await espnFetch(`${LEAGUE_PATH[sport]}/scoreboard`);
+  }
   const events: any[] = data.events ?? [];
 
   // UFC: ESPN returns one event card with N competitions (bouts).
