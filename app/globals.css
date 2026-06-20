@@ -589,6 +589,8 @@ button { font-family: inherit; }
 }
 .info-value { font-size: var(--fs-14); font-weight: var(--fw-bold); margin-top: 3px; }
 .info-sub { font-size: var(--fs-11); color: var(--text3); }
+/* Game date — kept clearly legible (not muted) so it's easy to spot. */
+.info-date { font-size: var(--fs-13); font-weight: var(--fw-semibold); color: var(--text2); margin-top: 2px; }
 
 /* ---------- Series tracker ---------- */
 .series-tracker { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }

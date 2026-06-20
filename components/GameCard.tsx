@@ -32,7 +32,12 @@ function StatusBadge({ game }: { game: GameSummary }) {
       </span>
     );
   }
-  return <LocalTime utc={game.startTimeUTC} fallback={game.startTimeLocal} />;
+  // Scheduled: lead with the date (games can be days/weeks out) then the time.
+  return (
+    <span style={{ color: "var(--text2)", fontWeight: 700, fontSize: 12, whiteSpace: "nowrap" }}>
+      {game.dateLabel} · <LocalTime utc={game.startTimeUTC} fallback={game.startTimeLocal} />
+    </span>
+  );
 }
 
 export function GameCard({ game }: { game: GameSummary }) {

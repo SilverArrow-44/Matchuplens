@@ -151,7 +151,11 @@ export default async function GamePage({ params }: Props) {
                   <div className="info-value">
                     {isFinal ? game.dateLabel : <LocalTime utc={game.startTimeUTC} fallback={game.startTimeLocal} />}
                   </div>
-                  <div className="info-sub">{isFinal ? game.venue : game.dateLabel}</div>
+                  {isFinal ? (
+                    <div className="info-sub">{game.venue}</div>
+                  ) : (
+                    <div className="info-date">{game.dateLabel}</div>
+                  )}
                 </div>
                 <div className="info-box">
                   <div className="info-label">Venue</div>

@@ -15,6 +15,9 @@ const SPORT_IDS = new Set([
   "nba", "nfl", "mlb", "nhl", "ncaaf", "ncaab", "ufc", "soccer", "worldcup",
 ]);
 
+// Short date for the compact ribbon: "Aug 29, 2026" -> "Aug 29".
+const shortDate = (label: string) => label.replace(/,\s*\d{4}$/, "");
+
 // Module-scope constants — stable identity so they don't need to be listed as
 // hook dependencies in the memos below.
 const RIBBON_MAX = 40;
@@ -274,7 +277,7 @@ export function SiteHeaderClient({ sports, games }: Props) {
                             </span>
                           ) : (
                             <span style={{ color: "var(--text3)", fontSize: 11 }}>
-                              <LocalTime utc={g.startTimeUTC} fallback={g.startTimeLocal} />
+                              {shortDate(g.dateLabel)} · <LocalTime utc={g.startTimeUTC} fallback={g.startTimeLocal} />
                             </span>
                           )}
                           {g.venue && (
@@ -367,7 +370,11 @@ export function SiteHeaderClient({ sports, games }: Props) {
                   </div>
                   <div className="ribbon-time">
                     {isLive ? g.period : isFinal ? "" : (
-                      <LocalTime utc={g.startTimeUTC} fallback={g.startTimeLocal} />
+                      <>
+                        <span style={{ color: "var(--text2)", fontWeight: 700 }}>{shortDate(g.dateLabel)}</span>
+                        {" · "}
+                        <LocalTime utc={g.startTimeUTC} fallback={g.startTimeLocal} />
+                      </>
                     )}
                   </div>
                 </Link>
