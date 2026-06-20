@@ -493,8 +493,20 @@ export async function fetchSeasonStatus(sport: SportId): Promise<boolean> {
   }
 }
 
+/** Today's date as YYYYMMDD in US Eastern time (matches the app's ET-based "today"). */
+function todayYYYYMMDD(): string {
+  return new Date()
+    .toLocaleDateString("en-CA", { timeZone: "America/New_York" })
+    .replace(/-/g, "");
+}
+
 export async function fetchLiveGames(sport: SportId): Promise<GameDetail[]> {
-  const data = await espnFetch(`${LEAGUE_PATH[sport]}/scoreboard`);
+  // Query TODAY explicitly. ESPN's bare /scoreboard lingers on the last
+  // completed slate (yesterday's finals) until the new day's games populate,
+  // which made pages show "no games today" while the ribbon showed stale finals.
+  const data = await espnFetch(
+    `${LEAGUE_PATH[sport]}/scoreboard?dates=${todayYYYYMMDD()}`
+  );
   const events: any[] = data.events ?? [];
 
   // UFC: ESPN returns one event card with N competitions (bouts).

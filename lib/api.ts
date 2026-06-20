@@ -71,7 +71,18 @@ export async function getTodaysGames(sport?: SportId): Promise<GameSummary[]> {
       return live; // live succeeded (possibly an empty slate — that's truthful)
     })
   );
-  return results.flat();
+
+  // Safety net: drop finals/cancelled games that started on a previous ET day.
+  // fetchLiveGames already queries today, but this guarantees every surface
+  // (homepage, sport pages, AND the header ribbon) agrees on what "today" means.
+  const todayET = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  return results.flat().filter((g) => {
+    if (g.status !== "final" && g.status !== "cancelled") return true;
+    const gameDay = new Date(g.startTimeUTC).toLocaleDateString("en-CA", {
+      timeZone: "America/New_York",
+    });
+    return gameDay >= todayET;
+  });
 }
 
 export async function getFeaturedGame(): Promise<GameDetail> {
