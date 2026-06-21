@@ -97,6 +97,40 @@ export async function getFeaturedGame(): Promise<GameDetail> {
   return GAMES.find((g) => g.id === FEATURED_GAME_ID) ?? GAMES[0];
 }
 
+/**
+ * Find a completed game by ESPN event id across the last `days` days.
+ * Used to resolve game pages linked from "Recent Results" — those games are
+ * no longer in today's scoreboard, so we look them up by date. Each date is
+ * cached by ISR, so repeat visits are cheap.
+ */
+async function findRecentGameById(
+  sport: SportId,
+  eventId: string,
+  days = 8
+): Promise<GameDetail | null> {
+  if (SAMPLE_MODE) return null;
+  const dates: string[] = [];
+  for (let i = 0; i <= days; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(
+      d.getFullYear().toString() +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        String(d.getDate()).padStart(2, "0")
+    );
+  }
+  const results = await Promise.allSettled(
+    dates.map((dt) => fetchGamesForDate(sport, dt))
+  );
+  for (const r of results) {
+    if (r.status === "fulfilled") {
+      const found = r.value.find((g) => g.id === eventId);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 export async function getGameBySlug(
   sport: SportId,
   slug: string
@@ -108,7 +142,11 @@ export async function getGameBySlug(
   const eventId = parseEventId(slug);
   if (!eventId) return null;
   const live = await liveGamesFor(sport);
-  const game = live?.find((g) => g.id === eventId) ?? null;
+  let game = live?.find((g) => g.id === eventId) ?? null;
+
+  // Not in today's slate? It's likely a past game (e.g. linked from "Recent
+  // Results"). Search the last several days by date for the event id.
+  if (!game) game = await findRecentGameById(sport, eventId);
   if (!game) return null;
 
   // Enrich with per-game data: injuries from /summary, H2H from team schedule.
