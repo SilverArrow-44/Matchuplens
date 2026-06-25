@@ -19,8 +19,8 @@ export function Footer() {
           {[
             ["About",                 "/about"],
             ["FAQ",                   "/faq"],
+            ["Guides",                "/guides"],
             ["Glossary",              "/glossary"],
-            ["World Cup 2026 Guide",  "/guides/world-cup-2026"],
             ["Methodology",           "/methodology"],
             ["Privacy Policy",        "/legal/privacy"],
             ["Terms of Service",      "/legal/terms"],

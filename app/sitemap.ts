@@ -25,6 +25,24 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
     lastModified: new Date("2026-06-20"),
   },
   {
+    url: `${BASE}/guides`,
+    changeFrequency: "monthly",
+    priority: 0.6,
+    lastModified: new Date("2026-06-25"),
+  },
+  {
+    url: `${BASE}/guides/how-to-read-win-probability`,
+    changeFrequency: "monthly",
+    priority: 0.7,
+    lastModified: new Date("2026-06-25"),
+  },
+  {
+    url: `${BASE}/guides/sports-betting-odds-explained`,
+    changeFrequency: "monthly",
+    priority: 0.7,
+    lastModified: new Date("2026-06-25"),
+  },
+  {
     url: `${BASE}/guides/world-cup-2026`,
     changeFrequency: "weekly",
     priority: 0.8,
