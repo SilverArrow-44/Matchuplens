@@ -17,12 +17,16 @@ export function Footer() {
         {/* Legal links */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 20px", fontSize: 13 }}>
           {[
+            ["About",                 "/about"],
+            ["FAQ",                   "/faq"],
+            ["Glossary",              "/glossary"],
+            ["World Cup 2026 Guide",  "/guides/world-cup-2026"],
+            ["Methodology",           "/methodology"],
             ["Privacy Policy",        "/legal/privacy"],
             ["Terms of Service",      "/legal/terms"],
             ["Disclaimer",            "/legal/disclaimer"],
             ["Responsible Gambling",  "/legal/responsible-gambling"],
             ["Affiliate Disclosure",  "/legal/affiliate-disclosure"],
-            ["Methodology",           "/methodology"],
             ["Contact",               "/legal/contact"],
           ].map(([label, href]) => (
             <a key={href} href={href} style={{ color: "var(--text3)" }}>

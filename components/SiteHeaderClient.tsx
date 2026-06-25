@@ -64,8 +64,10 @@ function ThemeToggleInline() {
 export function SiteHeaderClient({ sports, games }: Props) {
   const pathname = usePathname();
   const router = useRouter();
-  // Hide pills + ribbon on legal/static pages — they add crawl noise before unique content
-  const hidePillsAndRibbon = pathname.startsWith("/legal") || pathname === "/methodology";
+  // Hide pills + ribbon on legal/static/content pages — they add crawl noise before unique content
+  const CONTENT_PATHS = ["/methodology", "/about", "/faq", "/glossary", "/guides"];
+  const hidePillsAndRibbon =
+    pathname.startsWith("/legal") || CONTENT_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
   const searchRef = useRef<HTMLDivElement>(null);
   const ribbonRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);

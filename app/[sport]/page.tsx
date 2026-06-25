@@ -31,6 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${s.label} ${noun} Today — Predictions, Stats & Matchups`,
     description: `Today's ${s.label} ${noun.toLowerCase()} with stats, head-to-head history, injury reports, and win probability predictions.`,
     alternates: { canonical: `https://matchuplens.com/${sport}` },
+    // Offseason sport pages have no games (thin content) — keep them out of the
+    // index until the season returns, but let crawlers follow links through.
+    robots: s.inSeason ? undefined : { index: false, follow: true },
   };
 }
 
