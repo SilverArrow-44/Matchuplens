@@ -133,8 +133,10 @@ async function findRecentGameById(
 
 export async function getGameBySlug(
   sport: SportId,
-  slug: string
+  slug: string,
+  opts: { enrich?: boolean } = {}
 ): Promise<GameDetail | null> {
+  const { enrich = true } = opts;
   // Sample games have human slugs; live games end in an ESPN event id.
   const sample = GAMES.find((g) => g.sport === sport && g.slug === slug);
   if (sample) return sample;
@@ -148,6 +150,10 @@ export async function getGameBySlug(
   // Results"). Search the last several days by date for the event id.
   if (!game) game = await findRecentGameById(sport, eventId);
   if (!game) return null;
+
+  // Callers that only need the core matchup (e.g. the OG image) can skip the
+  // extra injury/H2H fetches.
+  if (!enrich) return game;
 
   // Enrich with per-game data: injuries from /summary, H2H from team schedule.
   // Runs in parallel; each falls back gracefully on failure.

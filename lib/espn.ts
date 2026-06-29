@@ -68,11 +68,12 @@ function sanitizeHtml(raw: string): string {
 
 async function espnFetch(path: string): Promise<any> {
   const res = await fetch(`${BASE}/${path}`, {
-    // Cache for 10 min. This is the FLOOR for the fetch cache, not the page.
-    // Each route's own `export const revalidate` (300 home / 600 sport+game)
-    // still governs regeneration frequency — set to 600 so this fetch never
-    // drags a route below its intended cadence (which would inflate ISR writes).
-    next: { revalidate: 600 },
+    // Cache for 1 hour. ISR-write control: pages can only stay cached as long
+    // as their data does, so this must match the route revalidate (3600s) — a
+    // shorter value here would cap page lifetime and force more regenerations
+    // (= more ISR writes). Raising this was the fix for blowing the free-tier
+    // ISR-write limit. Trade-off: live scores can lag up to ~1 hour.
+    next: { revalidate: 3600 },
     headers: { "User-Agent": "MatchupLens/1.0" },
   });
   if (!res.ok) throw new Error(`ESPN ${path}: ${res.status}`);

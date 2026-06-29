@@ -10,23 +10,27 @@ import { LocalTime } from "@/components/LocalTime";
 import { MatchupAnalysis } from "@/components/MatchupAnalysis";
 import { ShareButtons } from "@/components/ShareButtons";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
-import {
-  getAllGameParams,
-  getGameBySlug,
-  getTodaysGames,
-  isValidSport,
-} from "@/lib/api";
+import { getGameBySlug, getTodaysGames, isValidSport } from "@/lib/api";
 
-// Revalidate every 10 min — still fresh for a prediction site, ~10x fewer ISR writes than 60s
-export const revalidate = 600;
+// Revalidate hourly. Game pages are the dominant ISR-write source (one cache
+// entry per matchup × every crawl that finds it stale), so a long interval is
+// the biggest lever for staying under the free-tier ISR-write limit. A finished
+// game never changes; a pre-game page's odds move slowly. Trade-off: the live
+// score on an individual game page can lag up to ~1 hour (the homepage and
+// sport pages carry the same data on the same interval).
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 interface Props {
   params: Promise<{ sport: string; slug: string }>;
 }
 
+// Render game pages on-demand (dynamicParams) rather than pre-building every
+// matchup on each deploy — that build-time pre-render seeds an ISR write per
+// page on every deployment. They still cache on first request and are listed
+// in the sitemap, so SEO is unaffected.
 export async function generateStaticParams() {
-  return getAllGameParams();
+  return [];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

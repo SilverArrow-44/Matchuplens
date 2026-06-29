@@ -5,6 +5,9 @@ export const runtime = "edge";
 export const alt = "Matchup preview";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+// Cache the generated image so crawlers re-fetching it don't regenerate it
+// every time (saves Fluid CPU / function execution).
+export const revalidate = 86400;
 
 interface Props {
   params: Promise<{ sport: string; slug: string }>;
@@ -14,7 +17,8 @@ export default async function Image({ params }: Props) {
   const { sport, slug } = await params;
   if (!isValidSport(sport)) return new Response("Not found", { status: 404 });
 
-  const game = await getGameBySlug(sport, slug);
+  // OG image only needs the core matchup — skip the injury/H2H enrichment fetches.
+  const game = await getGameBySlug(sport, slug, { enrich: false });
   if (!game) return new Response("Not found", { status: 404 });
 
   const favProb =

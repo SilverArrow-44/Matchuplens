@@ -6,8 +6,9 @@ import { AdSlot } from "@/components/AdSlot";
 import { LocalTime } from "@/components/LocalTime";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 
-// Refresh live scores/odds every 5 minutes (ISR-write-friendly)
-export const revalidate = 300;
+// Revalidate hourly. Higher = far fewer ISR writes (free-tier limit) and a
+// higher cache-hit rate. Trade-off: live scores can lag up to ~1 hour.
+export const revalidate = 3600;
 
 export default async function HomePage() {
   const [featured, games] = await Promise.all([

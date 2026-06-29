@@ -5,8 +5,8 @@ import { GameCard } from "@/components/GameCard";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { getSports, getTodaysGames, getRecentResults, isValidSport } from "@/lib/api";
 
-// Refresh live scores/odds every 10 minutes (ISR-write-friendly)
-export const revalidate = 600;
+// Revalidate hourly — minimizes ISR writes (free-tier limit). See lib/espn.ts.
+export const revalidate = 3600;
 
 interface Props {
   params: Promise<{ sport: string }>;
