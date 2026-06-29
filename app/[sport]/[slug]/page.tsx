@@ -34,8 +34,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!isValidSport(sport)) return {};
   const game = await getGameBySlug(sport, slug);
   if (!game) return {};
-  const title = `${game.away.shortName} vs ${game.home.shortName} Prediction, Stats & H2H — ${game.dateLabel}`;
-  const description = `${game.away.name} vs ${game.home.name} (${game.contextLabel ?? game.league}): win probability ${game.winProbHome.toFixed(1)}% ${game.home.abbr}, team stats, last 10 head-to-head, injury report, and our pick.`;
+  // Use FULL team names + "Prediction & Analysis" — this matches how people
+  // actually search (e.g. "cleveland browns @ jacksonville jaguars prediction
+  // analysis"), which the old short-name title was missing.
+  const title = `${game.away.name} vs ${game.home.name} Prediction & Analysis`;
+  const favTeam = game.winProbHome >= 50 ? game.home : game.away;
+  const favPct = (game.winProbHome >= 50 ? game.winProbHome : 100 - game.winProbHome).toFixed(0);
+  const description = `${game.away.name} vs ${game.home.name} ${game.league} prediction for ${game.dateLabel}. Our model favors ${favTeam.shortName} (${favPct}%). Team stats, head-to-head history, injury report, and full analysis.`;
   return {
     title,
     description,
@@ -66,6 +71,20 @@ export default async function GamePage({ params }: Props) {
     : false;
 
   // SportsEvent structured data — helps Google show rich results.
+  // Estimated end (~3h after start) — schema wants an endDate window.
+  const endDate = new Date(
+    new Date(game.startTimeUTC).getTime() + 3 * 60 * 60 * 1000
+  ).toISOString();
+  const eventStatus =
+    game.status === "cancelled"
+      ? "https://schema.org/EventCancelled"
+      : game.status === "postponed"
+        ? "https://schema.org/EventPostponed"
+        : "https://schema.org/EventScheduled";
+  const teams = [
+    { "@type": "SportsTeam", name: game.away.name },
+    { "@type": "SportsTeam", name: game.home.name },
+  ];
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SportsEvent",
@@ -73,14 +92,31 @@ export default async function GamePage({ params }: Props) {
     description: game.contextLabel ?? game.league,
     // Must be ISO-8601 for Google to validate the rich result.
     startDate: game.startTimeUTC,
+    endDate,
+    eventStatus,
+    image: ["https://matchuplens.com/og-image.png"],
     location: {
       "@type": "Place",
       name: game.venue,
       address: game.city,
     },
-    competitor: [
-      { "@type": "SportsTeam", name: game.away.name },
-      { "@type": "SportsTeam", name: game.home.name },
+    competitor: teams,
+    performer: teams,
+    organizer: { "@type": "SportsOrganization", name: game.league },
+  };
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://matchuplens.com/" },
+      { "@type": "ListItem", position: 2, name: game.league, item: `https://matchuplens.com/${sport}` },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: `${game.away.shortName} vs ${game.home.shortName}`,
+        item: `https://matchuplens.com/${sport}/${slug}`,
+      },
     ],
   };
 
@@ -90,10 +126,24 @@ export default async function GamePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       <main className="container">
         <div className="page-grid">
           <Sidebar game={game} />
           <div>
+            {/* Breadcrumb — gives Google a crawlable link to the category hub */}
+            <nav aria-label="Breadcrumb" style={{ fontSize: 13, marginBottom: 14 }}>
+              <Link href="/" style={{ color: "var(--text3)" }}>Home</Link>
+              <span style={{ color: "var(--text3)" }}> / </span>
+              <Link href={`/${sport}`} style={{ color: "var(--blue)", fontWeight: 600 }}>
+                {game.league}
+              </Link>
+              <span style={{ color: "var(--text3)" }}> / {game.away.shortName} vs {game.home.shortName}</span>
+            </nav>
+
             {/* ── Final game: recap banner — leads with result, not prediction ── */}
             {isFinal && (
               <div className={`recap-banner${modelCorrect ? " correct" : " incorrect"}`}>
@@ -275,14 +325,14 @@ export default async function GamePage({ params }: Props) {
                   <GameCard key={g.id} game={g} />
                 ))}
                 <Link
-                  href="/"
+                  href={`/${sport}`}
                   style={{
                     color: "var(--blue)",
                     fontWeight: 600,
                     fontSize: 14,
                   }}
                 >
-                  See all games →
+                  All {game.league} games →
                 </Link>
               </section>
             )}

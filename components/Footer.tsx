@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { SPORTS } from "@/lib/sampleData";
+
 export function Footer() {
   const year = new Date().getFullYear();
   return (
@@ -6,6 +9,15 @@ export function Footer() {
         <div style={{ fontWeight: 800, color: "var(--text2)", fontSize: 16 }}>
           MatchupLens
         </div>
+
+        {/* Sports hubs — crawlable links so Google can reach every category page */}
+        <nav aria-label="Sports" style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px", fontSize: 13 }}>
+          {SPORTS.map((s) => (
+            <Link key={s.id} href={`/${s.id}`} style={{ color: "var(--text2)", fontWeight: 600 }}>
+              {s.label}
+            </Link>
+          ))}
+        </nav>
         <div>
           Stats, matchup history, and win probability predictions for every game.
           Predictions are editorial analysis for entertainment purposes only — not betting advice.

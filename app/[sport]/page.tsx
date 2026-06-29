@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { GameCard } from "@/components/GameCard";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { getSports, getTodaysGames, getRecentResults, isValidSport } from "@/lib/api";
@@ -31,9 +32,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${s.label} ${noun} Today — Predictions, Stats & Matchups`,
     description: `Today's ${s.label} ${noun.toLowerCase()} with stats, head-to-head history, injury reports, and win probability predictions.`,
     alternates: { canonical: `https://matchuplens.com/${sport}` },
-    // Offseason sport pages have no games (thin content) — keep them out of the
-    // index until the season returns, but let crawlers follow links through.
-    robots: s.inSeason ? undefined : { index: false, follow: true },
   };
 }
 
@@ -132,6 +130,38 @@ export default async function SportPage({ params }: Props) {
             ))}
           </section>
         )}
+
+        {/* Evergreen hub content — keeps the category page substantive (and
+            indexable) even on quiet days, with internal links to the guides. */}
+        <section className="panel" style={{ marginTop: 40, lineHeight: 1.8 }}>
+          <div className="section-h" style={{ marginBottom: 8 }}>
+            About {sportInfo.label} predictions on MatchupLens
+          </div>
+          <p style={{ color: "var(--text2)", fontSize: 14 }}>
+            For every {sportInfo.label} {noun.replace(/s$/, "")}, MatchupLens brings
+            the matchup into one view: each side&rsquo;s record and key stats,
+            head-to-head history, the latest injury report, the betting-market
+            line, and a transparent win-probability estimate with a plain-English
+            breakdown of why it leans the way it does.{" "}
+            {sportInfo.inSeason
+              ? `Today's ${sportInfo.label} slate is up top — check back through the day as scores and lines update.`
+              : `${sportInfo.label} is between games right now; this page fills with matchups automatically as soon as the schedule returns.`}
+          </p>
+          <p style={{ color: "var(--text2)", fontSize: 14, marginTop: 10 }}>
+            New to the numbers? Read{" "}
+            <Link href="/guides/how-to-read-win-probability" style={{ color: "var(--blue)" }}>
+              how to read a win probability
+            </Link>{" "}
+            and{" "}
+            <Link href="/guides/sports-betting-odds-explained" style={{ color: "var(--blue)" }}>
+              how betting odds work
+            </Link>
+            , or browse the full{" "}
+            <Link href="/glossary" style={{ color: "var(--blue)" }}>glossary</Link>. Our
+            full approach is documented on the{" "}
+            <Link href="/methodology" style={{ color: "var(--blue)" }}>methodology page</Link>.
+          </p>
+        </section>
       </main>
     </>
   );
