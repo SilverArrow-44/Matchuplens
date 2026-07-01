@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Disclaimer — MatchupLens",
   description: "Important disclaimers about predictions and betting content on MatchupLens.",
+  alternates: { canonical: "https://matchuplens.com/legal/disclaimer" },
 };
 
 export default function DisclaimerPage() {

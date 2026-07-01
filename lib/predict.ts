@@ -97,7 +97,7 @@ export function buildPrediction(input: PredictInput): Prediction {
     pickAbbr: pick.abbr,
     pickTeamName: pick.name,
     reasoning: pickHome
-      ? `${home.shortName} ${input.isFight ? "is" : "are"} favored${input.neutralSite ? "" : " at home"}${margin < 8 ? ", but this projects close — treat it as a lean, not a lock" : ""}.`
+      ? `${home.shortName} ${input.isFight ? "is" : "are"} favored${input.neutralSite ? "" : " at home"}${margin < 8 ? ", but this projects close — treat it as a lean, not a certainty" : ""}.`
       : `${away.shortName} ${input.isFight ? "is" : "are"} favored despite ${input.neutralSite || input.isFight ? "the matchup context" : "playing on the road"}${margin < 8 ? " — a narrow edge" : ""}.`,
     confidence: margin >= 15 ? "High" : margin >= 7 ? "Medium" : "Low",
   };

@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Privacy Policy — MatchupLens",
   description: "How MatchupLens collects, uses, and protects your information.",
+  alternates: { canonical: "https://matchuplens.com/legal/privacy" },
 };
 
 export default function PrivacyPage() {

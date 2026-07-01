@@ -28,6 +28,7 @@ export interface Team {
   color: string; // hex
   record: string; // "57-25"
   logo?: string; // team logo URL (from live API)
+  slug?: string; // team-page slug, e.g. "new-york-knicks"
 }
 
 export interface GameSummary {
@@ -127,4 +128,40 @@ export interface GameDetail extends GameSummary {
   injuries: { rows: InjuryRow[]; source: string; updated: string };
   prediction: Prediction;
   ats: { label: string; value: string }[]; // against-the-spread records for sidebar
+}
+
+// ── Evergreen team + matchup pages ──────────────────────────────────────────
+export interface TeamRef {
+  id: string;
+  slug: string; // ESPN slug, e.g. "los-angeles-lakers"
+  name: string; // "Los Angeles Lakers"
+  shortName: string; // "Lakers"
+  abbr: string; // "LAL"
+  color: string; // hex
+  logo?: string;
+}
+
+export interface TeamGameRef {
+  eventId: string;
+  slug: string; // matchup game-page slug: /{sport}/{slug}
+  opponentShort: string;
+  opponentAbbr: string;
+  opponentTeamSlug?: string; // for /{sport}/team/{slug} link when resolvable
+  isHome: boolean;
+  dateLabel: string;
+  startTimeUTC: string;
+  status: GameSummary["status"];
+  teamScore?: number;
+  oppScore?: number;
+  result?: "W" | "L" | "D";
+}
+
+export interface TeamPageData {
+  team: TeamRef;
+  record: string; // "12-5" derived from completed games
+  homeRecord: string;
+  awayRecord: string;
+  form: ("W" | "L" | "D")[]; // most-recent first, up to 5
+  upcoming: TeamGameRef[];
+  recent: TeamGameRef[];
 }

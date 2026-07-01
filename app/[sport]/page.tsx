@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { GameCard } from "@/components/GameCard";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
-import { getSports, getTodaysGames, getRecentResults, isValidSport } from "@/lib/api";
+import { getSports, getTeams, getTodaysGames, getRecentResults, isValidSport } from "@/lib/api";
 
 // Revalidate hourly — minimizes ISR writes (free-tier limit). See lib/espn.ts.
 export const revalidate = 3600;
@@ -47,10 +47,13 @@ export default async function SportPage({ params }: Props) {
       : sport === "worldcup" || sport === "soccer"
         ? "matches"
         : "games";
+  // Weekly sports frame the hub as "this week"; daily sports as "today".
+  const hubPeriod = sport === "nfl" || sport === "ncaaf" ? "this-week" : "today";
 
-  const [allGames, recentResults] = await Promise.all([
+  const [allGames, recentResults, teams] = await Promise.all([
     getTodaysGames(sport),
     getRecentResults(sport, 7),
+    getTeams(sport),
   ]);
 
   // Drop stale finals from previous days (same filter as homepage)
@@ -82,6 +85,12 @@ export default async function SportPage({ params }: Props) {
               : gamesAreToday
                 ? `${sportInfo.label} ${noun} for today — stats, history, and predictions.`
                 : `Upcoming ${sportInfo.label} ${noun} — stats, history, and predictions.`}
+        </p>
+
+        <p style={{ marginBottom: 16 }}>
+          <Link href={`/${sport}/predictions/${hubPeriod}`} style={{ color: "var(--blue)", fontWeight: 600 }}>
+            {sportInfo.label} predictions {hubPeriod === "this-week" ? "this week" : "today"} — model leans &amp; confidence →
+          </Link>
         </p>
 
         {/* Games section — "Today's" only when games are actually today */}
@@ -128,6 +137,25 @@ export default async function SportPage({ params }: Props) {
             {recentResults.map((g) => (
               <GameCard key={g.id} game={g} />
             ))}
+          </section>
+        )}
+
+        {/* Teams directory — evergreen internal links to every team hub. */}
+        {teams.length > 0 && (
+          <section style={{ marginTop: 40 }}>
+            <div className="section-h" style={{ marginBottom: 12 }}>{sportInfo.label} teams</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {teams.map((tm) => (
+                <Link
+                  key={tm.id}
+                  href={`/${sport}/team/${tm.slug}`}
+                  className="league-chip"
+                  style={{ background: "var(--bg3)", color: "var(--blue)" }}
+                >
+                  {tm.shortName}
+                </Link>
+              ))}
+            </div>
           </section>
         )}
 

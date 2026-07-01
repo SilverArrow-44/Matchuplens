@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Affiliate Disclosure — MatchupLens",
   description: "MatchupLens affiliate and sponsorship disclosure.",
+  alternates: { canonical: "https://matchuplens.com/legal/affiliate-disclosure" },
 };
 
 export default function AffiliateDisclosurePage() {

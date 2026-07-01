@@ -1,8 +1,12 @@
 import type { MetadataRoute } from "next";
-import { getAllGameParams, getSports } from "@/lib/api";
+import { getAllGameParams, getSports, getTeams } from "@/lib/api";
+import type { SportId } from "@/lib/types";
 
 const BASE = "https://matchuplens.com";
 const NOW = new Date();
+
+// Leagues with team hub pages (individual sports don't).
+const TEAM_SPORTS: SportId[] = ["nba", "wnba", "nfl", "mlb", "nhl", "ncaaf", "ncaab", "soccer"];
 
 const STATIC_PAGES: MetadataRoute.Sitemap = [
   { url: BASE, changeFrequency: "hourly", priority: 1, lastModified: NOW },
@@ -55,6 +59,12 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
     lastModified: new Date("2026-06-01"),
   },
   {
+    url: `${BASE}/prediction-accuracy`,
+    changeFrequency: "daily",
+    priority: 0.7,
+    lastModified: NOW,
+  },
+  {
     url: `${BASE}/legal/privacy`,
     changeFrequency: "yearly",
     priority: 0.2,
@@ -93,7 +103,20 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [sports, games] = await Promise.all([getSports(), getAllGameParams()]);
+  const [sports, games, teamLists] = await Promise.all([
+    getSports(),
+    getAllGameParams(),
+    Promise.all(TEAM_SPORTS.map((s) => getTeams(s))),
+  ]);
+
+  const teamUrls = TEAM_SPORTS.flatMap((s, i) =>
+    teamLists[i].map((t) => ({
+      url: `${BASE}/${s}/team/${t.slug}`,
+      changeFrequency: "daily" as const,
+      priority: 0.6,
+      lastModified: NOW,
+    }))
+  );
 
   return [
     ...STATIC_PAGES,
@@ -103,6 +126,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
       lastModified: NOW,
     })),
+    // Daily prediction hubs — weekly sports use "this-week", others "today".
+    ...sports.map((s) => ({
+      url: `${BASE}/${s.id}/predictions/${s.id === "nfl" || s.id === "ncaaf" ? "this-week" : "today"}`,
+      changeFrequency: "hourly" as const,
+      priority: 0.8,
+      lastModified: NOW,
+    })),
+    ...teamUrls,
     ...games.map((g) => ({
       url: `${BASE}/${g.sport}/${g.slug}`,
       changeFrequency: "hourly" as const,

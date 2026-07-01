@@ -34,6 +34,7 @@ export function Footer() {
             ["Guides",                "/guides"],
             ["Glossary",              "/glossary"],
             ["Methodology",           "/methodology"],
+            ["Accuracy",              "/prediction-accuracy"],
             ["Privacy Policy",        "/legal/privacy"],
             ["Terms of Service",      "/legal/terms"],
             ["Disclaimer",            "/legal/disclaimer"],
@@ -47,8 +48,10 @@ export function Footer() {
           ))}
         </div>
         <div style={{ fontSize: 12, color: "var(--text3)" }}>
-          Data sourced from ESPN. We may earn a commission from affiliate links on this site.{" "}
-          &copy; {year} MatchupLens. Not affiliated with any sports league or team.
+          Data sourced from ESPN and may be delayed or estimated. Predictions are
+          informational only. We may earn a commission from affiliate links on this
+          site. Not affiliated with ESPN, any league, or any team.{" "}
+          &copy; {year} MatchupLens.
         </div>
       </div>
     </footer>

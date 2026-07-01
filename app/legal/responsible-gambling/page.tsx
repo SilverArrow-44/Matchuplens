@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Responsible Gambling — MatchupLens",
   description: "Resources and information for responsible gambling.",
+  alternates: { canonical: "https://matchuplens.com/legal/responsible-gambling" },
 };
 
 export default function ResponsibleGamblingPage() {

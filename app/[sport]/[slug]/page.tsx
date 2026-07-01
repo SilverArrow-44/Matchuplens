@@ -21,6 +21,9 @@ import { getGameBySlug, getTodaysGames, isValidSport } from "@/lib/api";
 export const revalidate = 3600;
 export const dynamicParams = true;
 
+// Sports that have team hub pages (individual sports don't).
+const TEAM_LINK_SPORTS = new Set(["nba", "wnba", "nfl", "mlb", "nhl", "ncaaf", "ncaab", "soccer"]);
+
 interface Props {
   params: Promise<{ sport: string; slug: string }>;
 }
@@ -73,6 +76,15 @@ export default async function GamePage({ params }: Props) {
     ? (homeWon && game.prediction.pickAbbr === game.home.abbr) ||
       (!homeWon && game.prediction.pickAbbr === game.away.abbr)
     : false;
+
+  // ISR regenerates this page periodically; this reflects the last data refresh.
+  const updatedAt = new Date().toLocaleString("en-US", {
+    timeZone: "America/New_York",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
 
   // SportsEvent structured data — helps Google show rich results.
   // Estimated end (~3h after start) — schema wants an endDate window.
@@ -175,7 +187,13 @@ export default async function GamePage({ params }: Props) {
               <div className="hero-matchup">
                 <div className="hero-team">
                   <TeamBadge team={game.away} />
-                  <div className="hero-team-name">{game.away.name}</div>
+                  {TEAM_LINK_SPORTS.has(sport) && game.away.slug ? (
+                    <Link href={`/${sport}/team/${game.away.slug}`} className="hero-team-name" style={{ color: "var(--blue)" }}>
+                      {game.away.name}
+                    </Link>
+                  ) : (
+                    <div className="hero-team-name">{game.away.name}</div>
+                  )}
                   <div className="hero-team-record">{game.away.record}</div>
                 </div>
                 <div className="hero-vs">
@@ -193,7 +211,13 @@ export default async function GamePage({ params }: Props) {
                 </div>
                 <div className="hero-team">
                   <TeamBadge team={game.home} />
-                  <div className="hero-team-name">{game.home.name}</div>
+                  {TEAM_LINK_SPORTS.has(sport) && game.home.slug ? (
+                    <Link href={`/${sport}/team/${game.home.slug}`} className="hero-team-name" style={{ color: "var(--blue)" }}>
+                      {game.home.name}
+                    </Link>
+                  ) : (
+                    <div className="hero-team-name">{game.home.name}</div>
+                  )}
                   <div className="hero-team-record">{game.home.record}</div>
                 </div>
               </div>
@@ -310,6 +334,12 @@ export default async function GamePage({ params }: Props) {
                   . Full reasoning in the Prediction tab.
                 </>
               )}
+            </p>
+
+            <p style={{ fontSize: 11, color: "var(--text3)", margin: "0 0 14px" }}>
+              Last updated {updatedAt} ET · Estimated win probability based on
+              available data, which may be delayed. Informational only — not
+              betting advice.
             </p>
 
             <GameTabs game={game} />

@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Contact — MatchupLens",
   description: "Get in touch with the MatchupLens team.",
+  alternates: { canonical: "https://matchuplens.com/legal/contact" },
 };
 
 export default function ContactPage() {

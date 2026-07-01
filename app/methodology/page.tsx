@@ -99,6 +99,10 @@ export default function MethodologyPage() {
             not indicative of future results. If you choose to wager, please do
             so responsibly and within your means. Sports betting involves risk
             of financial loss.{" "}
+            <Link href="/prediction-accuracy" style={{ color: "var(--blue)" }}>
+              See how the model has performed
+            </Link>{" "}
+            ·{" "}
             <Link href="/legal/responsible-gambling" style={{ color: "var(--blue)" }}>
               Responsible gambling resources →
             </Link>

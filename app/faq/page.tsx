@@ -40,9 +40,9 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
       <>
         No. Our predictions are editorial analysis for informational and
         entertainment purposes only. No model can guarantee a sports outcome, and
-        we never claim to. We don&rsquo;t sell &ldquo;locks&rdquo; or guaranteed
-        winners, and we show a confidence level precisely so you can see how
-        uncertain a given call is.
+        we never claim to. We don&rsquo;t sell picks or promise outcomes, and we
+        show a confidence level precisely so you can see how uncertain a given
+        call is.
       </>
     ),
   },

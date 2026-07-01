@@ -332,7 +332,7 @@ function buildTeamSportsAnalysis(game: GameDetail): MatchupAnalysis {
     game.prediction.confidence === "High"
       ? "The model has high confidence in this call."
       : game.prediction.confidence === "Medium"
-        ? "The model has medium confidence — treat this as a lean, not a lock."
+        ? "The model has medium confidence — treat this as a lean, not a certainty."
         : "Low confidence — this projects close and either team could win.";
 
   const predictionSummary = [

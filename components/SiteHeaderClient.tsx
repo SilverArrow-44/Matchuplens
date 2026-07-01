@@ -65,7 +65,7 @@ export function SiteHeaderClient({ sports, games }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   // Hide pills + ribbon on legal/static/content pages — they add crawl noise before unique content
-  const CONTENT_PATHS = ["/methodology", "/about", "/faq", "/glossary", "/guides"];
+  const CONTENT_PATHS = ["/methodology", "/about", "/faq", "/glossary", "/guides", "/prediction-accuracy"];
   const hidePillsAndRibbon =
     pathname.startsWith("/legal") || CONTENT_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
   const searchRef = useRef<HTMLDivElement>(null);

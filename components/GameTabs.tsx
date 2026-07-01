@@ -429,6 +429,8 @@ export function GameTabs({ game }: { game: GameDetail }) {
             <p style={{ fontSize: 11, color: "var(--text3)", marginTop: 10, lineHeight: 1.5 }}>
               For entertainment only. Not betting advice. You are solely responsible
               for your wagering decisions.{" "}
+              <Link href="/prediction-accuracy" style={{ color: "var(--blue)" }}>Our track record</Link>
+              {" · "}
               <Link href="/legal/disclaimer" style={{ color: "var(--blue)" }}>Full disclaimer →</Link>
             </p>
 

@@ -1,5 +1,6 @@
 import type {
   GameDetail,
+  GameSummary,
   H2H,
   H2HGame,
   InjuryRow,
@@ -7,6 +8,9 @@ import type {
   SportId,
   StatComparison,
   Team,
+  TeamGameRef,
+  TeamPageData,
+  TeamRef,
 } from "./types";
 import { buildPrediction } from "./predict";
 
@@ -113,6 +117,7 @@ function mapTeam(competitor: any): Team {
     color: t.color ? `#${t.color}` : "#8e8e9c",
     record: overall,
     logo: t.logo ?? t.headshot ?? undefined,
+    slug: t.slug ?? slugify(name),
   };
 }
 
@@ -551,7 +556,8 @@ export async function fetchLiveGames(sport: SportId): Promise<GameDetail[]> {
  */
 export async function fetchGamesForDate(
   sport: SportId,
-  yyyymmdd: string
+  yyyymmdd: string,
+  finalsOnly = true
 ): Promise<GameDetail[]> {
   const data = await espnFetch(
     `${LEAGUE_PATH[sport]}/scoreboard?dates=${yyyymmdd}`
@@ -566,5 +572,166 @@ export async function fetchGamesForDate(
       }
     })
     .filter((g): g is GameDetail => g !== null)
-    .filter((g) => g.status === "final"); // only completed games
+    .filter((g) => !finalsOnly || g.status === "final");
+}
+
+// ---------------------------------------------------------------------------
+// Evergreen team + matchup data (team lists + schedules).
+// Team sports only — UFC/individual sports return no teams here.
+// ---------------------------------------------------------------------------
+
+/** All teams for a league, for team pages + slug resolution. */
+export async function fetchTeams(sport: SportId): Promise<TeamRef[]> {
+  try {
+    const data = await espnFetch(`${LEAGUE_PATH[sport]}/teams`);
+    const groups: any[] = data?.sports?.[0]?.leagues?.[0]?.teams ?? [];
+    return groups
+      .map((g): TeamRef | null => {
+        const t = g.team ?? g;
+        if (!t?.id) return null;
+        const name: string = t.displayName ?? t.name ?? t.shortDisplayName ?? "";
+        if (!name) return null;
+        return {
+          id: String(t.id),
+          slug: t.slug ?? slugify(name),
+          name,
+          shortName: t.shortDisplayName ?? t.name ?? name,
+          abbr: t.abbreviation ?? name.slice(0, 3).toUpperCase(),
+          color: t.color ? `#${t.color}` : "#8e8e9c",
+          logo: t.logos?.[0]?.href ?? t.logo ?? undefined,
+        };
+      })
+      .filter((t): t is TeamRef => t !== null);
+  } catch {
+    return [];
+  }
+}
+
+// Minimal Team from a schedule competitor (used to build game-page slugs).
+function scheduleTeam(c: any): Team {
+  const t = c?.team ?? {};
+  const name = t.displayName ?? t.name ?? "TBD";
+  const short = t.shortDisplayName ?? t.name ?? name;
+  return {
+    id: String(t.id ?? name),
+    name,
+    shortName: short,
+    abbr: t.abbreviation ?? short.slice(0, 3).toUpperCase(),
+    color: t.color ? `#${t.color}` : "#8e8e9c",
+    record: "",
+    logo: t.logo ?? undefined,
+  };
+}
+
+function num(v: unknown): number | undefined {
+  if (v == null || v === "") return undefined;
+  const n = Number(typeof v === "object" ? (v as any).value ?? (v as any).displayValue : v);
+  return isNaN(n) ? undefined : n;
+}
+
+/** A team's schedule → upcoming + recent games, form, and home/away splits. */
+export async function fetchTeamData(
+  sport: SportId,
+  team: TeamRef
+): Promise<TeamPageData | null> {
+  let data: any;
+  try {
+    data = await espnFetch(`${LEAGUE_PATH[sport]}/teams/${team.id}/schedule`);
+  } catch {
+    return null;
+  }
+  const events: any[] = data?.events ?? [];
+
+  const sorted = [...events].sort(
+    (a, b) => new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime()
+  );
+
+  const upcoming: TeamGameRef[] = [];
+  const recent: TeamGameRef[] = [];
+  const form: ("W" | "L" | "D")[] = [];
+  let wins = 0, losses = 0, draws = 0, homeW = 0, homeL = 0, awayW = 0, awayL = 0;
+
+  for (const event of sorted) {
+    const comp = event.competitions?.[0];
+    const competitors: any[] = comp?.competitors ?? [];
+    if (competitors.length < 2) continue;
+    const our =
+      competitors.find((c) => String(c.team?.id ?? c.id) === team.id) ??
+      competitors.find((c) => c.team?.abbreviation === team.abbr);
+    const opp = competitors.find((c) => c !== our);
+    if (!our || !opp) continue;
+
+    const isHome = our.homeAway === "home";
+    const state = comp.status?.type?.state; // pre | in | post
+    const status: GameSummary["status"] =
+      state === "in" ? "live" : state === "post" ? "final" : "scheduled";
+
+    const oppTeam = opp.team ?? {};
+    const oppShort = oppTeam.shortDisplayName ?? oppTeam.name ?? oppTeam.displayName ?? "TBD";
+    const { date } = fmtTime(event.date);
+
+    const homeC = competitors.find((c) => c.homeAway === "home") ?? competitors[0];
+    const awayC = competitors.find((c) => c.homeAway === "away") ?? competitors[1];
+    const slug = buildSlug(scheduleTeam(awayC), scheduleTeam(homeC), String(event.id));
+
+    const teamScore = num(our.score);
+    const oppScore = num(opp.score);
+
+    let result: "W" | "L" | "D" | undefined;
+    if (status === "final" && teamScore != null && oppScore != null) {
+      result = teamScore > oppScore ? "W" : teamScore < oppScore ? "L" : "D";
+      if (result === "W") { wins++; if (isHome) homeW++; else awayW++; }
+      else if (result === "L") { losses++; if (isHome) homeL++; else awayL++; }
+      else draws++;
+      if (form.length < 5) form.push(result);
+    }
+
+    const ref: TeamGameRef = {
+      eventId: String(event.id),
+      slug,
+      opponentShort: oppShort,
+      opponentAbbr: oppTeam.abbreviation ?? oppShort.slice(0, 3).toUpperCase(),
+      opponentTeamSlug: oppTeam.slug ?? (oppTeam.displayName ? slugify(oppTeam.displayName) : undefined),
+      isHome,
+      dateLabel: date,
+      startTimeUTC: event.date ?? new Date().toISOString(),
+      status,
+      teamScore,
+      oppScore,
+      result,
+    };
+
+    if (status === "final") recent.push(ref);
+    else upcoming.push(ref);
+  }
+
+  upcoming.reverse(); // soonest first
+
+  const record = draws > 0 ? `${wins}-${losses}-${draws}` : `${wins}-${losses}`;
+  return {
+    team,
+    record,
+    homeRecord: `${homeW}-${homeL}`,
+    awayRecord: `${awayW}-${awayL}`,
+    form,
+    upcoming: upcoming.slice(0, 8),
+    recent: recent.slice(0, 10),
+  };
+}
+
+/** Head-to-head between two teams, from teamA's season schedule. */
+export async function fetchHeadToHead(
+  sport: SportId,
+  teamA: TeamRef,
+  teamB: TeamRef
+): Promise<H2H> {
+  const empty: H2H = { homeWins: 0, awayWins: 0, windowLabel: "", games: [], trend: "" };
+  try {
+    const data = await espnFetch(`${LEAGUE_PATH[sport]}/teams/${teamA.id}/schedule`);
+    const home: Team = { ...teamA, record: "" };
+    const away: Team = { ...teamB, record: "" };
+    return mapH2H(data, home, away);
+  } catch {
+    return empty;
+  }
 }

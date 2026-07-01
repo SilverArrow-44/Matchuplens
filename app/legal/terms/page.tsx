@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Terms of Service — MatchupLens",
   description: "Terms and conditions for using MatchupLens.",
+  alternates: { canonical: "https://matchuplens.com/legal/terms" },
 };
 
 export default function TermsPage() {
