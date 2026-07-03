@@ -138,8 +138,8 @@ export async function getFeaturedGame(): Promise<GameDetail> {
 async function findGameByIdInWindow(
   sport: SportId,
   eventId: string,
-  back = 8,
-  fwd = 8
+  back = 30, // ~1 month back so recently-completed game pages resolve (200)
+  fwd = 8    // ...instead of 404-ing as they age out of the live slate.
 ): Promise<GameDetail | null> {
   if (SAMPLE_MODE) return null;
   const dates: string[] = [];
