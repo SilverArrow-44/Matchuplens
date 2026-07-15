@@ -399,6 +399,9 @@ function mapH2H(scheduleData: any, home: Team, away: Team): H2H {
   for (const event of sorted) {
     const comp = event.competitions?.[0];
     if (!comp) continue;
+    // Only count completed games — the schedule endpoint also lists future games.
+    const completed = comp.status?.type?.completed === true || comp.status?.type?.state === "post";
+    if (!completed) continue;
     const competitors: any[] = comp.competitors ?? [];
 
     // Only include games where the opponent is the away team
@@ -410,9 +413,10 @@ function mapH2H(scheduleData: any, home: Team, away: Team): H2H {
     );
     if (!homeComp || !awayComp) continue;
 
-    // Skip games without scores (not yet played)
-    const homeScore = homeComp.score != null ? Number(homeComp.score) : null;
-    const awayScore = awayComp.score != null ? Number(awayComp.score) : null;
+    // Schedule-endpoint scores are objects ({ value, displayValue }), not strings
+    // — parse via num() so we don't get NaN. Skip games without a valid score.
+    const homeScore = num(homeComp.score);
+    const awayScore = num(awayComp.score);
     if (homeScore == null || awayScore == null) continue;
 
     const homeWon = homeScore > awayScore;
