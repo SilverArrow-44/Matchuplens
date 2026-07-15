@@ -48,10 +48,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const favTeam = game.winProbHome >= 50 ? game.home : game.away;
   const favPct = (game.winProbHome >= 50 ? game.winProbHome : 100 - game.winProbHome).toFixed(0);
   const description = `${game.away.name} vs ${game.home.name} ${game.league} prediction for ${game.dateLabel}. Our model favors ${favTeam.shortName} (${favPct}%). Team stats, head-to-head history, injury report, and full analysis.`;
+  // Finished/cancelled games have little ongoing search value — search intent for
+  // "X vs Y prediction" is pre-game — so noindex them (still crawlable via links).
+  // This keeps thin, ephemeral pages out of the index and concentrates crawl
+  // budget on live/upcoming games and the evergreen team/matchup pages.
+  const done = game.status === "final" || game.status === "cancelled";
   return {
     title,
     description,
     alternates: { canonical: `https://matchuplens.com/${sport}/${slug}` },
+    robots: done ? { index: false, follow: true } : undefined,
   };
 }
 

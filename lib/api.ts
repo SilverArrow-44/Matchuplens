@@ -239,11 +239,13 @@ export async function getRecentResults(
 export async function getAllGameParams(): Promise<
   { sport: string; slug: string }[]
 > {
-  // Used by sitemap + static generation. Live slugs included when reachable;
-  // new games render on demand (dynamicParams) and revalidate per the
-  // route segment config (600s for game pages).
+  // Used by sitemap + static generation. Exclude finished/cancelled games —
+  // those are noindexed (see the game page's generateMetadata), so listing them
+  // in the sitemap would send Google a contradictory signal.
   const games = await getTodaysGames();
-  return games.map((g) => ({ sport: g.sport, slug: g.slug }));
+  return games
+    .filter((g) => g.status !== "final" && g.status !== "cancelled")
+    .map((g) => ({ sport: g.sport, slug: g.slug }));
 }
 
 export function isValidSport(s: string): s is SportId {
