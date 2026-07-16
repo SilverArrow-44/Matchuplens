@@ -91,6 +91,15 @@ function slugify(s: string): string {
     .replace(/^-|-$/g, "");
 }
 
+// Extract a moneyline from ESPN's nested odds shape:
+// { open: { odds: "+110" }, close: { odds: "-115" } } → -115
+function moneylineFrom(side: any): number | undefined {
+  const raw = side?.close?.odds ?? side?.open?.odds ?? side?.moneyLine;
+  if (raw == null || raw === "") return undefined;
+  const n = Number(String(raw).replace(/^\+/, ""));
+  return isNaN(n) ? undefined : n;
+}
+
 export function buildSlug(away: Team, home: Team, eventId: string): string {
   return `${slugify(away.shortName)}-vs-${slugify(home.shortName)}-prediction-${eventId}`;
 }
@@ -242,10 +251,14 @@ function mapEvent(sport: SportId, event: any, compOverride?: any): GameDetail | 
   const prediction = buildPrediction({
     home,
     away,
-    homeMoneyline: odds?.homeTeamOdds?.moneyLine,
-    awayMoneyline: odds?.awayTeamOdds?.moneyLine,
+    // ESPN has two odds shapes: `homeTeamOdds.moneyLine` (a number) on some
+    // feeds, and `moneyline.home.close.odds` (a string) on others (e.g. soccer/
+    // World Cup). Handle both so the market signal isn't silently dropped.
+    homeMoneyline: odds?.homeTeamOdds?.moneyLine ?? moneylineFrom(odds?.moneyline?.home),
+    awayMoneyline: odds?.awayTeamOdds?.moneyLine ?? moneylineFrom(odds?.moneyline?.away),
     oddsDetails: odds?.details,
-    neutralSite: comp.neutralSite === true,
+    // World Cup matches are at neutral host venues — no home advantage.
+    neutralSite: comp.neutralSite === true || sport === "worldcup",
     isFight: sport === "ufc",
   });
 
@@ -523,7 +536,18 @@ export async function fetchLiveGames(sport: SportId): Promise<GameDetail[]> {
     `${LEAGUE_PATH[sport]}/scoreboard?dates=${todayYYYYMMDD()}`
   );
   if (!data.events?.length) {
-    data = await espnFetch(`${LEAGUE_PATH[sport]}/scoreboard`);
+    // No games today — grab the next week as a date RANGE, not ESPN's single
+    // "current" matchday. This is what makes multi-day knockout stages fully
+    // appear — e.g. the World Cup 3rd-place match (Jul 18) AND the final
+    // (Jul 19) sit on different matchdays; the bare scoreboard only returned one.
+    const end = new Date();
+    end.setDate(end.getDate() + 7);
+    const endStr = end
+      .toLocaleDateString("en-CA", { timeZone: "America/New_York" })
+      .replace(/-/g, "");
+    data = await espnFetch(
+      `${LEAGUE_PATH[sport]}/scoreboard?dates=${todayYYYYMMDD()}-${endStr}`
+    );
   }
   const events: any[] = data.events ?? [];
 
