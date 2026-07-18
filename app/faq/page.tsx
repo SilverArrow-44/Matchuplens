@@ -8,6 +8,31 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://matchuplens.com/faq" },
 };
 
+// aText = plain-text version of the answer, used for FAQPage structured data.
+// Keep it in sync with the rendered answer — Google flags mismatched FAQ schema.
+const FAQ_TEXT: Record<string, string> = {
+  "What is MatchupLens?":
+    "A free sports matchup site. For every game we combine team stats, head-to-head history, injury reports, the betting line, and a transparent win-probability estimate into one page, with a plain-English breakdown of why the matchup leans the way it does.",
+  "How is win probability calculated?":
+    "When a sportsbook moneyline is available, we convert it to an implied probability and use that as the base. When it isn't, we estimate from each team's win-loss record plus a fixed home-field adjustment. The full method is documented on our methodology page.",
+  "Are your predictions betting advice or guaranteed picks?":
+    "No. Our predictions are editorial analysis for informational and entertainment purposes only. No model can guarantee a sports outcome. We don't sell picks or promise outcomes, and we show a confidence level so you can see how uncertain a given call is.",
+  "Where does the data come from?":
+    "Scores, records, schedules, injury reports, and betting lines come from ESPN's public sports data. ESPN is not affiliated with MatchupLens, and we are not affiliated with any league or team.",
+  "How often is the data updated?":
+    "Pages refresh roughly every hour, so scores, lines, and statuses stay current through the day.",
+  "What does the confidence level mean?":
+    "It reflects how far the favorite's win probability sits from a coin flip — not how accurate the call is. High = an edge of 15 points or more, Medium = 7-14 points, Low = under 7 points (essentially a toss-up).",
+  "Why does a game show a near 50/50 prediction?":
+    "Because the inputs genuinely point to a close game — similar records and a tight or unavailable market line. We'd rather show an honest toss-up than manufacture false confidence.",
+  "What sports do you cover?":
+    "NBA, WNBA, NFL, MLB, NHL, UFC, college football, college basketball, soccer (MLS), and the 2026 FIFA World Cup. Each sport appears when its season is active.",
+  "Is MatchupLens free?":
+    "Yes. We may earn a commission from clearly labelled affiliate links and from display ads, but reading the site costs nothing and those relationships never affect our analysis.",
+  "Do you offer betting tips for sale?":
+    "No. We don't sell picks, run a tout service, or make guarantees. If you choose to bet, do so responsibly, only where legal, and only with money you can afford to lose. 21+.",
+};
+
 const FAQS: { q: string; a: React.ReactNode }[] = [
   {
     q: "What is MatchupLens?",
@@ -60,9 +85,9 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: "How often is the data updated?",
     a: (
       <>
-        Pages refresh roughly every 5 minutes on the homepage and every 10
-        minutes on individual game pages, so scores, lines, and statuses stay
-        current through the day without us hammering the data source.
+        Pages refresh roughly every hour, so scores, lines, and statuses stay
+        current through the day without us hammering the data source. Live
+        scores can lag by up to an hour.
       </>
     ),
   },
@@ -125,7 +150,10 @@ export default function FaqPage() {
     mainEntity: FAQS.map((f) => ({
       "@type": "Question",
       name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: "See matchuplens.com/faq for the full answer." },
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: FAQ_TEXT[f.q] ?? "See matchuplens.com/faq for the full answer.",
+      },
     })),
   };
 

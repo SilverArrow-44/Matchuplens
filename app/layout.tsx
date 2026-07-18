@@ -52,6 +52,27 @@ try {
 } catch (e) { document.documentElement.dataset.theme = "light"; }
 `;
 
+// Site-wide Organization + WebSite structured data.
+const siteLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://matchuplens.com/#org",
+      name: "MatchupLens",
+      url: "https://matchuplens.com",
+      logo: "https://matchuplens.com/logo-512.png",
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://matchuplens.com/#website",
+      name: "MatchupLens",
+      url: "https://matchuplens.com",
+      publisher: { "@id": "https://matchuplens.com/#org" },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -63,6 +84,10 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteLd) }}
+        />
         {/* AdSense — in <head> so crawlers find it in raw HTML */}
         <script
           async

@@ -45,7 +45,7 @@ export default async function HomePage() {
           <h1 className="brand-tagline">Know your edge before tip&#8209;off.</h1>
           <p className="brand-sub">
             Win probability, team stats, H2H history, and injury reports for
-            every game — updated live.
+            every game — updated all day.
           </p>
           <div className="brand-chips">
             <span className="brand-chip">📊 Team stats</span>
@@ -105,11 +105,39 @@ export default async function HomePage() {
         <NewsletterSignup />
 
         <div className="section-h" style={{ marginTop: 24 }}>
-          All games today
+          Today &amp; upcoming games
         </div>
-        {rest.map((g) => (
-          <GameCard key={g.id} game={g} />
-        ))}
+        {rest.length > 0 ? (
+          rest.map((g) => <GameCard key={g.id} game={g} />)
+        ) : (
+          <div className="panel" style={{ color: "var(--text2)" }}>
+            No other games on the slate right now — check back soon.
+          </div>
+        )}
+
+        {/* Explore — homepage links to the site's strongest evergreen pages */}
+        <section style={{ marginTop: 36 }}>
+          <div className="section-h" style={{ marginBottom: 12 }}>Explore MatchupLens</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {[
+              ["How to read a win probability", "/guides/how-to-read-win-probability"],
+              ["Betting odds, explained", "/guides/sports-betting-odds-explained"],
+              ["World Cup 2026 guide", "/guides/world-cup-2026"],
+              ["Our prediction accuracy", "/prediction-accuracy"],
+              ["How the model works", "/methodology"],
+              ["Glossary", "/glossary"],
+            ].map(([label, href]) => (
+              <Link
+                key={href}
+                href={href}
+                className="league-chip"
+                style={{ background: "var(--bg3)", color: "var(--blue)" }}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </section>
       </main>
     </>
   );

@@ -3,6 +3,9 @@ import Link from "next/link";
 import { getAccuracyStats } from "@/lib/api";
 import { getLoggedStats } from "@/lib/predictionLog";
 
+// Regenerate every 6h (matches the in-process accuracy cache TTL).
+export const revalidate = 21600;
+
 export const metadata: Metadata = {
   title: "Prediction Accuracy Tracker — How Our Model Performs",
   description:

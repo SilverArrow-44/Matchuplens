@@ -85,9 +85,9 @@ export default function MethodologyPage() {
           <div className="panel-title">Data source</div>
           <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--text2)" }}>
             Team records, scores, and odds are sourced from ESPN&rsquo;s public
-            scoreboard API. Pages refresh roughly every 5 minutes on the
-            homepage and every 10 minutes on individual game pages. ESPN is not
-            a sponsor or affiliate of MatchupLens.
+            scoreboard API. Pages refresh roughly every hour, so live scores can
+            lag by up to an hour. ESPN is not a sponsor or affiliate of
+            MatchupLens.
           </p>
         </div>
 
